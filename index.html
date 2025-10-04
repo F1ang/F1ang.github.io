@@ -162,6 +162,87 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/10/05/Computer_Base/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/fyp.jpg">
+      <meta itemprop="name" content="By Spotted Owl">
+      <meta itemprop="description" content="少年自有凌云志，不负黄河万古流.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="斑点鹰不想熬夜">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/10/05/Computer_Base/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-10-05 01:53:08 / 修改时间：02:09:12" itemprop="dateCreated datePublished" datetime="2025-10-05T01:53:08+08:00">2025-10-05</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>竹杖芒鞋轻胜马,一蓑烟雨任平生.</p>
+<p>一、hexo、git、blog搭建<br>1、环境初始化</p>
+<pre><code>输入npm命令安装Hexo
+npm install -g hexo-cli
+hexo init 命令初始化博客
+hexo g 静态部署
+hexo s 本地静态查看，快速进行调试
+
+安装Git部署插件 npm install hexo-deployer-git --save  
+hexo clean   #清除缓存文件 db.json 和已生成的静态文件 public
+hexo g       #生成网站静态文件到默认设置的 public 文件夹(hexo generate 的缩写)
+hexo d       #自动生成网站静态文件，并部署到设定的仓库(hexo deploy 的缩写)
+</code></pre>
+<p>2、指令操作</p>
+<pre><code>域名访问文件 CNAME
+www.yipeiblog.top
+npm install hexo-deployer-git --save  &amp;&amp; hexo clean &amp;&amp; hexo g &amp;&amp; hexo d &amp;&amp; hexo s
+
+fatal: not a git repository和 Error: Spawn failed原因：
+hexo clean   # 清除缓存
+rm -rf .deploy_git   # 强制删除旧仓库
+hexo g &amp;&amp; hexo d   # 重新生成并部署
+</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/10/01/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -291,7 +372,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-count">2</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
