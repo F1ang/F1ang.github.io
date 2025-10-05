@@ -27,8 +27,8 @@
 <meta property="og:site_name" content="斑点鹰不想熬夜">
 <meta property="og:description" content="一、hexo、git、blog搭建1、环境初始化 输入npm命令安装Hexo npm install -g hexo-cli hexo init 命令初始化博客 hexo g 静态部署 hexo s 本地静态查看，快速进行调试  安装Git部署插件 npm install hexo-deployer-git --save   hexo clean   #清除缓存文件 db.json 和已生成的静态">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-10-05T04:48:40.480Z">
-<meta property="article:modified_time" content="2025-10-05T04:48:40.480Z">
+<meta property="article:published_time" content="2025-10-05T18:25:08.937Z">
+<meta property="article:modified_time" content="2025-10-05T18:25:08.937Z">
 <meta property="article:author" content="By Spotted Owl">
 <meta name="twitter:card" content="summary">
 
@@ -205,6 +205,14 @@ fatal: not a git repository和 Error: Spawn failed原因：
 hexo clean   # 清除缓存
 rm -rf .deploy_git   # 强制删除旧仓库
 hexo g &amp;&amp; hexo d   # 重新生成并部署
+</code></pre>
+<p>3、引入图片</p>
+<pre><code>示例：&lt;div style=&quot;display: flex; gap: 20px; justify-content: center;&quot;&gt;
+&lt;img src=&quot;../images/Spotted_Owl1.png&quot; alt=&quot;斑点鹰&quot; width=&quot;300&quot;&gt;
+&lt;img src=&quot;../images/Spotted_Owl2.png&quot; alt=&quot;斑点鹰&quot; width=&quot;300&quot;&gt;
+&lt;/div&gt;
+
+注意：使用../images/而非../_image/（避免下划线开头可能被服务器忽略）
 </code></pre>
 
       </div>
