@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一、直流无刷电机、现代永磁同步电机学习笔记二、ST FOC V2.0库三、FOC-&gt;建系dq、SVPWM、单电阻采样、转速四、无感控制算法(kalaman、滑膜SMO、模型参考自适应MRAS、初始位置辨识(6脉冲注入、HFI)、HALL)五、电机算法综述(SVPWM、弱磁扩速、观测器、无感启动算法)六、FOC算法实现(标幺化FOC相关参数、FOC本质、ST_SVPWM与dpp补偿、带宽概述)">
+<meta property="og:type" content="website">
+<meta property="og:title" content="斑点鹰不想熬夜">
+<meta property="og:url" content="http://example.com/categories/motor_note.html">
+<meta property="og:site_name" content="斑点鹰不想熬夜">
+<meta property="og:description" content="一、直流无刷电机、现代永磁同步电机学习笔记二、ST FOC V2.0库三、FOC-&gt;建系dq、SVPWM、单电阻采样、转速四、无感控制算法(kalaman、滑膜SMO、模型参考自适应MRAS、初始位置辨识(6脉冲注入、HFI)、HALL)五、电机算法综述(SVPWM、弱磁扩速、观测器、无感启动算法)六、FOC算法实现(标幺化FOC相关参数、FOC本质、ST_SVPWM与dpp补偿、带宽概述)">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-10-05T04:29:28.168Z">
+<meta property="article:modified_time" content="2025-10-05T04:29:28.168Z">
+<meta property="article:author" content="By Spotted Owl">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/categories/motor_note">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 斑点鹰不想熬夜
+</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">斑点鹰不想熬夜</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+  
+  
+
+          <div class="content page posts-expand">
+            
+
+    
+    
+    
+    <div class="post-block" lang="zh-CN">
+      <header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">
+</h1>
+
+<div class="post-meta">
+  
+
+</div>
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+          <p><a href="#section1-foc">一、直流无刷电机、现代永磁同步电机学习笔记</a><br><a href="#section2-foc">二、ST FOC V2.0库</a><br><a href="#section3-foc">三、FOC-&gt;建系dq、SVPWM、单电阻采样、转速</a><br><a href="#section4-foc">四、无感控制算法(kalaman、滑膜SMO、模型参考自适应MRAS、初始位置辨识(6脉冲注入、HFI)、HALL)</a><br><a href="#section5-foc">五、电机算法综述(SVPWM、弱磁扩速、观测器、无感启动算法)</a><br><a href="#section6-foc">六、FOC算法实现(标幺化FOC相关参数、FOC本质、ST_SVPWM与dpp补偿、带宽概述)</a><br><a href="#section7-foc">七、深入无感(永磁同步电机书籍总结)(李雅普诺夫稳定性、HFI、SMO、龙伯格观测器、DTC、MRAS、EKF、线性二次型调节器LQR、非线性磁链观测器)</a><br><a href="#section8-foc">八、电机基础补充(FOC控制参数-力矩、磁链、SVPWM幅值关系(参考系)、ADC标幺化、电机特性参数-电机功率、气隙磁场、Te、零极点对消)</a><br><a href="#section9-foc">九、电机应用(顺逆风、堵转、缺相、开环强拖、电机参数测量、顺逆风检查法与闭环运行、故障及恢复、坡道驻车、推车助力、TCS、EABS)</a></p>
+<p><span id="section1-foc"></span></p>
+<h4 id="一、直流无刷电机、现代永磁同步电机学习笔记"><a href="#一、直流无刷电机、现代永磁同步电机学习笔记" class="headerlink" title="一、直流无刷电机、现代永磁同步电机学习笔记"></a>一、直流无刷电机、现代永磁同步电机学习笔记</h4><pre><code>1.1、直流有刷电机(DC)
+    H桥(三极管)、电压、电流电路-运放
+    编码器及定时器溢出，PID(控制周期)-香农采样(采样f=2信号f)、实际值突变能力，冒泡排序，一阶低通滤波(滤波系数0~1)。
+    1ms进行脉冲读取-&gt;5ms进行脉冲变化(速度)-&gt;2(10ms)进行速度滤波：冒泡+一阶低通滤波-&gt;50ms进行PID控制。
+    速度环、电流环、角度环控制。  PID结果后进行一阶低通滤波pwm。
+    舵机20ms的PWM，脉宽0.5~2.5ms，0~180。  注：控制电平要和实际硬件电路联系起来，选择合适的PWM模式
+    PWM2(信号反向)
+    
+1.2、步进电机
+    位置-脉冲个数，转速-脉冲频率。
+    细分驱动(电流)，DIR+EN+SPEED。
+    PWM-ARR改变频率，翻转模式-CCR改变频率。
+    角度-&gt;脉冲数-&gt;CC中断改变脉冲数(2次进入中断一个脉冲)。
+    梯形加减速：频率加-均匀-减。周期T的计算-&gt;加速与减速的步数  速度和步数-&gt;运动阶段  步数=脉冲数。
+    S型加减速：加加速阶段步数-减加速阶段步数-确认下一个脉冲周期。
+    直线插补：至少2步进-多运动轴，分配驱动脉冲。  X+Y合成。 偏差。
+    曲线插补：X-Y分布走。
+    闭环系统：编码器
+    步进:脉冲数+脉冲频率(脉冲时间间隔=c/f)，步数+加减速度， 定时器计数-第n个脉冲-加减速与平稳， 加减速-步数-脉冲-每一步时间间隔，  手段-&gt;定时器CCR
+    加速度=c0步进延时--下一个脉冲比较值， 状态机-步数，  输出翻转-&gt;中断变更CCR,步进数  设置-&gt;执行
+    
+    //-----------------------------步进电机-----------------------------//
+    基础篇:
+        1、相数正比步距角(1步进脉冲转的角度)、拍数(电周期)四相四拍(AB-BC-CD-DA-AB)、定位转矩(无电自锁力)、保持转矩(通电无转自锁力)
+        步距角精度、失步(避免高速失步-&gt;加减速曲线)、矩频特性曲线
+        
+        2、角位移与输入的脉冲数成正比、转速与脉冲频率成正比,改变绕组通电的顺序， 电机就会反转。
+        
+        3、单极性整步驱动A-B-C-D  单极性半步驱动A-AB-B-BC-C-CD-D-DA 
+        双极性整步驱动CA-DB-AC-BD 双极性半步驱动CA－&gt;CA/DB－&gt;DB－&gt;DB/AC－&gt;AC－&gt;AC/BD－&gt;BD－&gt;BD/CA
+        细分驱动Ia与Ib合成旋转磁场,拖动转子.
+
+        4、硬件配置:开漏ENA与DIR，PUL为OC输出、T=2*toggle_pulse
+        脉冲不同频率输出-&gt;脉冲数-&gt;步进角
+        细分数(旋转一周需要的脉冲数)
+        多电机=多轴数
+
+        5、空载启动频率(大于会失步或者啸叫)
+        软件配置: 脉冲频率 = (60 RPM × 200 整步 × 16 细分) / 60 秒=3200 Hz
+
+    进阶篇:
+        综述,高速必须用曲线加速算法起动:分级加速、梯形加速、S字加速
+        1、梯形加减速:丢步与过冲
+
+1.3、直流无刷电机
+    方波驱动-BLDC，正弦波-PMSM。
+    六步换相：UVW-&gt;PWM调制-&gt;位置检测。
+    电角度=机械角度*极对数。
+    有感BLDC-逆变电路、PWM上桥臂、HALL及真值表。
+    函数指针的使用。  RPM-圈/min。
+    双环控制：电流环+转速环。  有感UVW-HUVW
+    无感驱动：UVW，反电动势过零点检测与换相(延迟30°导通换相)，运放比较器与中性点电路设计。  比较器信号-&gt;HALL信号。
+    开环加速-&gt;闭环换相。磁极对数-&gt;电角度-&gt;比较器的脉冲(电流)频率。
+    无刷直流电机无感控制：速度闭环、速度+电流双闭环。   电流环-&gt;主要针对有负载。
+    SPWM:面积等效(方波-&gt;正弦波  等幅不等宽)-傅里叶级数   正弦波-&gt;由方波w等,调宽(占空比)级数叠加  占空比=1/T  T=1/f
+    SVPWM:平均值等效原理
+
+1.4、FOC控制算法
+    UVW三相同时导通，常用永磁直流无刷电机(PMSM)-反电动势-正弦波。 SVPWM合成电压空间矢量。(SPWM仅是针对单相)磁场矢量控制方法。  
+    1、死区-上下管，COM事件-6步-接口定时器(HALL)-TRGI，BEMF=U-压降，接口定时器(计数CNT-捕获、主从、延时动作CCR2-PWM2)-控制定时器-主从及复位-TRGO(换向)，HALL也可以EXTI。
+    2、SPWM:调制波(输入信号)、载波(频谱信号)-周期与幅值  (U/I)跟踪控制-&gt;滞环环节  中心对齐-CNT作为载波-CCR阈值界(类调制波-脉宽)  
+        载波比恒定:1正弦周期内的脉冲数恒定--&gt;查表法调制SPWM  底部采样  同步调制--f同步
+    3、FOC:PMSM-正弦反电动势，n3!组合开关-&gt;空间电压矢量-&gt;旋转电压-&gt;电源角频率,  开关次数-7段/5段,  ap空间坐标系  扇区-&gt;矢量T-&gt;三相CCR
+        调制波(隐含)-相电压/线电压函数-马鞍/正弦
+        坐标变换-解耦, 本质:FOC就是把定子电流分解为与转子磁链同相的直轴分量及正交的交轴分量.  Clark:标幺量(U1/Un常用百分数表示)
+        位置与转速:HALL、光电、ABZ位置传感器,  电流滑动控制器SMC--观测器--位置和速度,  反电动势-&gt;角度    滤波--需补偿  
+        电流矢量控制--最大转矩电流比控制、id*=0控制、弱磁控制(弱反电动势、提速)、cosφ=1控制
+        本质:空间位置对力矩的控制   调节磁场-&gt;磁力-&gt;转矩-&gt;转速  T=转子磁场*定子磁场  弱磁控制-恒转矩-恒功率-正弦电流频率
+    
+        无感PMSM:位置检测算法-Observer+PLL(BEMF)、高频注入算法(IPMSM)。
+        TIM1-&gt;ADC采样点(P471)---SVPWM调制指数(导通时间反比)、死区时间、噪声时间、采样转换时间
+        IPMSM-内嵌式永磁同步电机-MTPA(IPMSM的最大转矩电流比)=iq/id
+        PID参数自整定，  !!!SVPWM信号&lt;-&gt;BEMF与HALL信号，!!!  周期测量频率1:1000   霍尔信号频率-采样(分辨率)-定时器计数(预分频)
+        电频率=磁极对数 x 机械频率  
+        霍尔传感器信号捕获中断服务函数：转子旋转方向确定、 计算电角度、计算新的预分频器值、 更新速度周期 FIFO 缓冲区、 转子电频率计算
+
+        BLDC:集中绕组,BEMF-梯形波,CTR-方波(直流-逆变-交流),直流电机,6步
+        PMSM:分布短距绕组,BEMF-正弦波,CTR-三相正弦波(交流),同步电机,FOC
+
+        FOC（Filed Oriented Control）是采用数学方法实现三相马达的力矩与励磁的解耦控制。主要是对电机的控制电流进行矢量分解，变成励磁电流Id和交轴电流Iq,励磁电流主要是产生励磁,控制的是磁场的强度,而交轴电流是用来控制力矩
+        FOC（电机矢量控制）要求严格的转子磁场定向，对于BLDC电机而言转子磁场方向始终与转子位置一致，因此其控制输入需要准确的转子绝对位置信号
+        
+        DTC（直接转矩控制）实际上与基于定子磁场定向，而定子磁场则是依据电压积分估算获得，在这个过程中跟转子位置没有关系，其控制过程中用到的量也都是静止坐标系下的量，
+        因此DTC控制相比于FOC控制要简单很多，完全不需要求解三角函数、坐标变换，如果需要用DTC进行速度闭环则需要测量电机的速度，但是依然不需要准确的绝对位置。
+        
+        本质；矢量控制，它的基本思想就是一致的：将多变量、强耦合、非线性、时变的交流电机复杂矢量系统通过解耦（坐标变换）的方式等效成直流电机的简单标量系统。
+        BLDC转矩波动-BENF顶部大于120°,不转矩波动(理论)- 梯形~=正弦 - FOC - 位置信息传感器
+    4、编码器校准:0度相位-定子角度-编码器	预启动(转矩iq和磁通id校准/SVPWM)-加速-运行
+    ST-FOC源码分析 2024.2.27
+
+1.5、FOC算法关键量化变量
+    1、有效非零矢量-作用时间-调制比   abc-&gt;ap坐标，引入方向(欧拉变换)  定方向，动大小(作用时间)  电压矢量增加角度  调制比=调制波基波峰值/载波基波峰值
+    2、零矢量平均分配-PWM对称-降低PWM谐波分量   Ts代表载波周期，即开关周期  
+    3、在三相正弦波中注入了零序分量的调制波进行规则采样的一种变形SPWM(调制波-正弦波)  SVPWM(正弦波+零序分量)
+    4、坐标变换、 PID 算法、 SVPWM 技术和新变换角（变相角度）--电机转子位置和速度=&gt;有传感器/无传感器
+    5、电机单相模型-&gt;Is-&gt;电流观测器-&gt;反电动势-&gt;位置    theta+w-&gt;滤波-&gt;延迟-&gt;相位补偿
+    6、abc-&gt;ap坐标变换,引入方向(欧拉变换)    ap定方向,动大小(作用时间)--&gt;合成矢量反之  (ap-欧拉系)
+    7、有效非零适量-作用时间-调制比(利用率=调制波幅值/载波幅值)  7段式SVPWM/5段式SVPWM  
+    8、定子磁场-扭力 与转子力臂垂直    FOC建模-将转子磁通作为定子和气隙磁通的参考坐标系-力追踪转子位置  SVPWM-电压同步转子位置   励磁/转矩分量
+    9、FOC关键:对电流矢量的幅值和空间位置(频率和相位)的控制    转子磁极位置-逆变器输出频率-转子角频率(异步-同步)  id-转速,iq-转矩(直流)  (定子坐标)电流空间矢量-&gt;dq(转子坐标)-&gt;反变换-&gt;FOC
+    10、电机转矩正比于 转子磁场 叉积 定子磁场.   电流-磁场-力-转矩-速度  U=磁场的微分(dB/dS=U)  磁动势=有效匝数*电流   
+
+    外面旋转磁场旋转 → 切割了鼠笼的金属导体 → 金属导体产生了电动势 → 由于鼠笼短接所以金属导体就产生了感应电流 → 感应电流产生了一个磁场（转子磁场）
+</code></pre>
+<p><span id="section2-foc"></span></p>
+<h4 id="二、ST-FOC-V2-0库"><a href="#二、ST-FOC-V2-0库" class="headerlink" title="二、ST FOC V2.0库"></a>二、ST FOC V2.0库</h4><pre><code>2.1、SVPWM、θ和W、载波和调制波
+    1、电角度： 一个点的磁极发生变化从N到S级变化的时候，代表电角度是180度（这个很多人都不讲）。所以电角度=极对数（或者级数/2）*机械角度
+    bldc FOC控制里面， park变换，用的就是电角度。
+    2、同步调制-正弦周期脉冲数固定-采样点-载波与调制波交点-CCR与调制波的关系(幅值-调制比、频率-ARR)-正弦幅值映射0~100%占空比-查表法-面积等效原理
+    3、角度小增量  1扇区会有多个，多个开关周期(载波周期)，多个7段SVPWM-功率开关管，实时更新T4、T6-&gt;a b c三相的CCR
+    4、SPWM 方法从电源的角度出发,以生成一个可调频调压的正弦波电源,而SVPWM方法将逆变系统和异步电机看作一个整体来考虑,模型比较简单,也便于微处理器的实时控制。
+
+    5、Ua、Up-&gt;合成矢量扇区判断、基本矢量作用时间-&gt;a、b、c三相的CCR值
+    6、过调制=逆变器输出电压波形将发生失真=&gt;输出磁链非圆形=&gt;+0矢量作用时间=&gt;磁链圆为正六边形的内切圆
+    7、Ua、Up-&gt;T4 T6 T7=T0-&gt;过调制处理-&gt;T4&#39;、T6&#39;、T7&#39;=T4&#39;=0
+
+    8、转子位置：有感-增量式光电编码器、光电式位置传感器、霍尔位置传感器
+    9、无感-BEMF、状态观测器
+    无感FOC: 
+    (1)电流观测器(BEMF模型)-&gt;滑膜(SMC)-&gt;校准因子z-&gt;I-估算 I-实测
+    (2)校准因子z-&gt;LPF-&gt;Is-&gt;反电动势Es-&gt;Ea Ep-&gt;估算角度     (Is-&gt;Ia、Ib的Clarke变换-&gt;Ia Ip-&gt;Ea Ep)
+    (3)角速度计算
+
+    10、!!! fpwm=f载波=f开关=20khz=&gt;三角波的计数需要定为=168MHz/20000 = 8200=&gt;中心对齐则为8200/2 !!!!   (168MHZ下，PWM载波频率，对应的载波计数)--即区分载波频率与载波计数
+    载波(三角波)频率=计数器更新频率  =&gt; 载波比 =&gt; 调制波频率
+    调制比=&gt;调制波放大倍数a
+    fpwm(Tpwm)与载波计数
+
+2.2、ST FOC库：
+    1、MC_type.h：电流(电压)Iq Id、状态观测器(位置与速度、PLL)、MTPA(IPMSM的最大转矩电流比)=iq/id、三环PID、系统和电源状态
+
+    2、MC_Key.c、MC_Display.c：按键调速与方向、显示控制界面
+
+    3、stm32f10x_Timebase.c：500us中断
+
+    4、MC_Globals.c：Ua、Up、三环PID
+
+    5、STM32F10x_MCconf.h：采样电阻、有感/无感、MTPA/弱磁/前馈PID、DAC
+
+    6、MC_Control_Param.h：Fpwm、Deadtime、调制比、电流环(转矩环)采样频率与Fpwm、温度与电压的阈值范围、速度环调节周期及其采样-PID(Kp/Ki/Kd参数及限幅)、
+    I、=&gt;转矩环-Iq-&gt;磁通环-Id、电机频率与PID系数的线性
+
+    7、MC_encoder_param.h：编码器及接口、一圈脉冲数、转子rpm、磁场定向控制-&gt;绝对位置校准
+
+    8、MC_hall_prm.h：HALL及接口、转子rpm与dpp
+
+    9、MC_State_Observer_param.h：PLL环、Iabc、SMC滑膜、启动时间与加速度、三相电流启动增长、速度观测方差及处理方式、观测器参数、
+    电机绕组和电感相互作用-&gt;电流、电压与反电动势、速度dpp转化、启动过程频率/电流增加的斜率
+
+    10、MC_PMSM_motor_param.h：电机绕阻R/L与极对数、额定电流、最大转速
+
+    11、MC_pwm_3shunt_prm.h：时钟、Fpwm、Deadtime、采样/噪声/上升/死区时间、采样的时间间隔设计
+
+    12、STM32x_svpwm_3shunt.c：ADC+DMA和SVPWM配置初始化、PWM2配置TRGO-&gt;ADC-&gt;SVPWM、ADC校准处理零漂、
+    磁链和转矩 PID 调节器采样频率=(2*PWM_FREQ)/(REP_RATE + 1)、下桥臂打开时，分别Ia Ib Ic采样及q1.15格式、
+    采样时刻Duty、死区DT、噪声Tn、转化Ts   4扇区不对C相采样：PWM_PERIOD-hTimePhC(等效于上桥臂导通) &gt; TW_AFTER // T下桥臂&gt;Tn+DT
+    载波计数ARR/2-CCR=T下桥臂&gt;Tn+DT
+
+    13、MC_FOC_Drive.c：PMSM力矩和磁通(FOC算法含PID)、弱磁、 PID反馈控制调节速度、电流前馈(速度环/外部输入ref进行预测补偿)
+    PID_Torque_InitStructure：转矩分量控制  PID_Flux_InitStructure：磁通分量控制
+    控制直轴电流id可以削弱磁通，进而进行弱磁扩速。(弱磁扩速框图知，是Id++，最大可用正交电流Iq会减小(因为恒功率=UI)，最大可传递电磁转矩也会减小)   
+
+    14、MC_Clarke_Park.c：q1.15格式存储数据、s16角度正弦x-y、98%调制指数下，过调制的幅值限制
+    调制指数越大,circle_limit_table 需要的元素量越少
+
+    15、MC_PID_regulators.c： 三环PID、简易PID参数自整定
+
+    16、stm32f10x_hall.c：HALL安装方式、HALL角度与电角度同步(同步电角度)-BEMF与电角度零点(BEMF过零点与HALL波形=&gt;同步电角度)
+    Fhall:Ftim=1:1000,随转速调tim的分频系数、速度格式(dpp-Tfoc与电角度变化、hz)  、HALL外设的配置-捕获/更新分频系数中断、转子电频率dpp、
+    定时器捕获值、定时器预分频值、旋转方向
+    转子转速(dpp)--对应的定时器周期、电角度获取
+
+    17、stm32f10x_encoder.c：rotor位置/速度、预定位--编码器零点校准、机械角度、电角度、溢出次数和编码器计数、机械频率(speed)
+
+    18、MC_State_Observer_Interface.c：	BEMF、PLL及增益PI、启动及速度dpp、系统是否收敛及可靠性、启动：转子预定位、外同步加速、运行
+    无感-加速/切换、启动电流(参考转矩)，启动励磁频率(角度计算)==&gt;FOC加速
+    STO_Calc_Rotor_Angle观测器参数：测量的定子电流、施加的电压命令、测量的直流母线电压=&gt;反电动势=&gt;PLL=&gt;估计速度和角度
+
+    Luenberger观测器：输出y与输入u来实现对系统状态(包括可测状态与不可测状态)的观测---状态(BEMF、相电流)，
+    系统收敛稳定(u&amp;y)=&gt;具体实现方式是通过配置G矩阵使得观测器的极点都具有负实部,这样观测器观测到的状态与系统实际状态之差则可以在有限时间收敛到0，从而保证观测器的稳定性与准确性。
+
+    19、MC_MotorControl_Layer.c：FOC初始化、过温过压
+
+    20、stm32f10x_MCdac.c：参数PWM写入ADC_VALUE
+
+    21、stm32f10x_it.c：刹车、TRGO触发ADC采流-&gt;FOC
+
+    22、main.c：3电阻采样、有感/无感初始化、电机状态更新
+
+    高级定时器-&gt;PWM2 TRGO-&gt;ADC电流采样-&gt;FOC-&gt;SVPWM
+    HALL-&gt;CCR1输入捕获、CCR2捕获中断
+
+    TIM1:ch1 ch2 ch3 pwm1，ch4 pwm2-&gt;TRGO-&gt;输出比较事件中断-ADC-SVPWM
+
+    TRGO中断频率可以设置为HALL捕获频率的整数倍，例如2倍、4倍等
+
+2.3、采集Ia Ib:
+    1、情况1：ΔDutyA&gt;DT+TN=&gt;A下桥臂载波计数溢出;
+    2、情况2：(DT+TN+TS)/2&lt;ΔDutyA&lt;DT+TN 和 ΔDutyAB&lt;DT+TR+TS =&gt;A下桥臂载波计数溢出之后，DT+TN
+    3、情况3：ΔDutyA&lt;(DT+TN+TS)/2       和 ΔDutyAB&gt;DT+TR+TS =&gt;A上桥臂载波计数下降到CCR下(即A上桥臂关断前)
+    由(2)、(3) ==&gt; ΔDutyAB&gt;2*ΔDutyA，因为一般TR&gt;TN
+    4、情况4：ΔDutyA&lt;(DT+TN+TS)/2 	  和 ΔDutyAB&lt;DT+TR+TS =&gt;无法采样
+    5、Ts可取  TW_BEFORE(A相上桥臂关断前即可)  TW_AFTER=DT+TN
+
+    ps:四扇区下，采流时刻可上桥臂101(对应下桥臂010)，因采集的是相电流，Ia+Ib可采集。
+
+    扇区公式：调制比-&gt;T与PWM的计数倍数关系，形成作用时间-&gt;有效矢量作用时间-&gt;Ua Up=&gt;ccr_a ccr_b ccr_c
+    7段式SVPWM=&gt;基本矢量作用时间=&gt;叠加A B C正脉冲保持时间(CCR计数)
+    核心:在下桥臂导通最短,即上桥臂最长时刻分析ADC采样时刻.
+    Ke反电动势常数计算公式：电压峰值*极对数/机械转速.
+</code></pre>
+<p><span id="section3-foc"></span></p>
+<h4 id="三、FOC-建系dq、SVPWM、单电阻采样、转速"><a href="#三、FOC-建系dq、SVPWM、单电阻采样、转速" class="headerlink" title="三、FOC-&gt;建系dq、SVPWM、单电阻采样、转速"></a>三、FOC-&gt;建系dq、SVPWM、单电阻采样、转速</h4><pre><code>位置环-&gt;速度环-&gt;电流环(内环)：电流反馈控制电机电流(扭矩)-&gt;控制扭矩来控制电机转速-&gt;控制转速来控制电机位置
+
+1、调制比(幅值)-载波比(采样及调制频率关系-数量关系)
+f位置环&lt;f速度环&lt;f电流环  励磁电流Id--励磁磁场强度、交轴电流Iq--转矩(力矩)
+两相电流(KCL)、位置信息(有感-HALL、编码器；无感-观测器)-角度+速度
+定子系(abc)-定子系(ap)-转子系(dq)   角度信息-电角度信息
+
+2、最大转矩控制：当励磁电流分量为0时，磁通完全由永磁体提供。电机所有的电流全部用来产生电磁转矩，只用控制Iq就可以控制电机转矩，就实现了电机的静态解耦。
+F=BIL，B=&gt;永磁体、电流变化产生，实现指定力矩=&gt;需要控制单一变量I，则要B的电流产生的分量为0(Id=0)，最终的参考分量Id=0、Iq=ref(稳速)
+Vq、Vd本身的参考值已定，Iq、Id只是根据反馈差值调节电机稳定性。
+
+3、SVPWM：平均值等效原理(等效磁链圆)：Us*Ts = U4*T4 + U6*T6，有效作用时间T4+T6=Tz-T0  控制电压矢量作用时间，使电压空间矢量接近按圆轨迹旋转  
+SPWM：面积等效原理(冲量/面积)：窄脉冲面积相等而形状不同-&gt;输出响应波形同
+基本电压矢量-&gt;合成电压矢量-&gt;投影分解三相电压  基本电压矢量-sa sb sc开关(功率开关管)
+KV高，最高输出电流大，扭力小，转速快。
+
+4、DTC与FOC-Ia Ib Ic和Udc，输出的就是六路两两互补的pwm波，外部电路一样，只是算法实现a到b路径不同。
+--DTC与MPCC一类，就是直接选择八个空间状态矢量，或者其组合(双矢量MPCC或三矢量)，计算矢量作用时间及选择哪几个矢量最优    定子磁场定向
+--FOC就是Id Iq控制，一般Id=0，弱磁、最大转矩电流比，位置获取DTC/FOC都有感无感，无感观测器(低速高频注入；中高速滑膜、龙伯格、磁链、卡尔曼、模型参考自适应)   转子磁场定向
+
+5、Ua Up-&gt;作用时间  
+SVPWM：合成空间电压矢量幅值最大不会超过图中所示的正六边形边界。而当合成矢量落在该边界之外时，将发生过调制，逆变器输出电压波形将发生失真。正六边形内切圆幅值√3/3*Udc。
+SPWM:逆变器能输出的不失真 最大正弦相电压幅值为Udc/2
+过调制处理:Tx+Ty&gt;Ts，比例关系把两个非零矢量作用时间矫正  =&gt;调制比m=pi*|Uref|/(2Vdc)  Uref_max=2/3*Vdc,矢量圆电压sqrt(3)/3*Vdc,m&lt;=0.9069线性调制区;m&gt;0.9069过调制区.
+最小相角误差-&gt;比例缩小合成电压矢量到六边形(六边形上的矢量去掉零适量)  最小幅值误差-&gt;比例缩小合成矢量到矢量圆(保留零适量)
+
+单电阻采样-&gt;载波周期足够小、电感值足够大时可以将一个载波周期内两次不同时刻采集的相电流视为同一时刻的相电流,再根据基尔霍夫电压电流定律进行电流重构。
+ps:重构-&gt;观测区(Tmin足够)、非观测区(Tmin不足)--扇区过渡/高压调制区-&gt;移相法
+电流采样最小脉宽时间 = 死区时间 + 开关管导通时间 + 振铃时间 + ADC转换时间
+双电阻/三电阻电流的采样窗口-&gt;非观测区-&gt;限制电压、高压调制-提前采样/过渡区-移相法
+
+6、机械角度-&gt;极对数-&gt;电角度-&gt;SVPWM
+调制波、载波-&gt;调制比(A)-输出波形电压幅值/载波电压幅值(计数)， 载波比(f)-每个正弦周期内的载波所含正弦调制波输出的 脉冲总数之比=1正弦周期的脉冲总数
+调制波与载波-&gt;SPWM-&gt;自然采样、规则采样(对称-载波底点采样1次；非对称-载波峰值采样2次)-&gt;开关导通脉宽及导通时刻  ps:定时器ccr与脉宽频率(载波)+调制波w=&gt;调制SPWM
+跟踪控制-&gt;滞环比较
+
+7、SPWM和SVPWM：调制波和载波=&gt;交点时刻对开关器件进行通断控制，采样时刻1/2次=每个脉冲周期有1/2次采样
+SPWM的查表法：SPWM的等面积原理+查表法的映射与占空比
+锁相环PLL重构转子电角度和速度
+
+8、SVPWM:中断1-Update事件-&gt;CNT&amp;CCR-&gt;CC4输出比较中断   中断2--计数溢出更新-&gt;CNT-&gt;TRG0-&gt;ADC采流-&gt;FOC-&gt;SVPWM
+9、HALL:CCR1输入捕获，CCR2随着转子转速提高捕获频率--改变PSC  接口定时器+PWM互补输出高级定时器
+
+10、编码器相对位置，转子磁场定向绝对位置-&gt;角度校准-&gt;零参考Iq Id-&gt;预定位(角度/相位校准)-&gt;ENC_Start_Up()
+11、磁通=Id变化产生+永磁体   Id=0-&gt;磁通完全由永磁体提供，实现解耦。
+
+12、转矩分量=交轴分量=Iq   励磁分量(磁通)=直轴分量=Id=弱磁扩速   B--Id、T--Iq
+!!磁通分量Bq、Bd=&gt;叉积为转矩!!
+相位校准--定子磁场和转子磁场的对齐，可令Iq=0，Id按指定方向赋值-&gt;定下磁场对齐最终方向|(也算是解耦控制)
+
+13、转子的初始位置不确定-&gt;初相位校准
+本质：转子磁链与A轴重合的时候，逆变器的开关状态SA:SB:SC=1:0:0，电流Ia Ib Ic-&gt;Ia Ip-&gt;Id Iq。  注：定义重合时为电角度0°
+Id=x,Iq=0,theta=0-&gt;直轴电流产生磁场的方向Bd-&gt;转子磁链会预定位到0度电角度
+Id=0,Iq=x,theta=0-&gt;交轴电流产生磁场的方向Bq-&gt;转子磁链会预定位到90度电角度  Ia=0,Ib=sqrt(3)/2 *Ip,Ic=-Ib-&gt;所以合成磁场=90°(电角度 一对极)
+
+14、捕获计数 * 1/定时器计数频率 = 周期T
+捕获计数频率比实际电频率(对应电周期) 高出3倍
+n=60f/p--rpm单位  转速(最大/最小)-&gt;对应频率/周期     
+PSC/TIM *CNT = T, 1/TIM * CNT=K=捕获的计数周期
+注：theta=0，代表转子磁链要完全对齐定子磁场   电角度=机械角度*极对数 
+</code></pre>
+<p><span id="section4-foc"></span></p>
+<h4 id="四、无感控制算法-kalaman、滑膜SMO、模型参考自适应MRAS、初始位置辨识-6脉冲注入、HFI-、HALL"><a href="#四、无感控制算法-kalaman、滑膜SMO、模型参考自适应MRAS、初始位置辨识-6脉冲注入、HFI-、HALL" class="headerlink" title="四、无感控制算法(kalaman、滑膜SMO、模型参考自适应MRAS、初始位置辨识(6脉冲注入、HFI)、HALL)"></a>四、无感控制算法(kalaman、滑膜SMO、模型参考自适应MRAS、初始位置辨识(6脉冲注入、HFI)、HALL)</h4><pre><code>4.1、kalaman：
+    状态方程=位置p与速度v    协方差=p与v的相关性   =&gt; 状态变量与协方差矩阵组成一个控制系统整体
+    输入影响状态方程、过程噪声Q影响协方差矩阵
+    
+    4.1.1、基本思想
+        1、量测+预测误差=&gt;正态分布=&gt;最优估计
+        2、状态方程-&gt;状态变量相关性-&gt;协方差矩阵    状态变量服从正态分布
+        3、预测状态方程、协方差方程；状态方程与转换矩阵(变基)、协方差矩阵与转换矩阵(不变基)
+        4、外部确定因素(加速等)-&gt;预测状态方程   外部不确定因素(摩擦等过程噪声)-&gt;p与v相关性会受噪声影响-&gt;协方差矩阵变化
+        5、新的最佳估计是基于上一时刻最佳估计和已知外部因素校正后得到的预测。新的不确定性是基于上一时刻不确定性和外部环境不确定性得到的预测。
+        
+        6、量测：传感器误差-&gt;状态方程与协方差矩阵-&gt;正态分布2
+        7、预测高斯分布1 x 量测高斯分布2=合高斯分布，均值/协方差   
+
+        8、预估值和观测值之间权重比的方法，而这权重比被称为卡尔曼增益
+        9、系统误差Q-外部不确定因素、观测误差R-传感器
+        10、预测状态/协方差，转化为传感器读数的同维度预测-&gt;预测均值/协方差矩阵
+
+    4.1.2、核心思想
+        预测、量测与高斯分布；状态方程与协方差矩阵(方差)，均值由状态方程*转换矩阵H求得。(协方差矩阵对角化方便求解)
+        预估与更新(修正)方程--预估值(观测器输出)与观测值/量测值(反馈输出)-&gt;符合状态观测器设计
+        卡尔曼增益调节权重--&gt;系统误差与观测误差(Q与R)，Q=系统协方差噪声(存在于状态方程)，R=观测器协方差噪声
+        卡尔曼观测器=kalaman滤波+观测器(反馈方式与修正方式)-&gt;状态方程与输出方程-&gt;确定F、Q、R。
+        工作原理：通过观测器的输出和系统的实际输出之差*卡尔曼增益，作为整个大观测器的修正值-&gt;修正状态观测器的状态量。同时依据误差协方差自适应调节卡尔曼增益K。
+        A矩阵的确定-&gt;泰勒展开把系统线性化分析-&gt;微积分离散化(算法执行周期)-&gt;确定F-&gt;P、K
+
+    4.1.3、陀螺仪应用核心
+        1、状态方程=位置p与速度v 、协方差=p与v的相关性 =&gt;状态变量与协方差矩阵组成一个控制系统整体。
+        2、预测、量测与高斯分布；状态方程与协方差矩阵(方差)，均值=状态方差*转换矩阵H。协方差矩阵对角化方便求解(转置矩阵)。
+        3、预估与更新(修正)方程—预估值(观测器输出)与观测值/量测值(反馈输出)-&gt;符合状态观测器设计
+        4、卡尔曼增益调节权重-&gt;系统误差与观测误差(Q与R)，Q=系统协方差噪声(存在于状态方程)=过程噪声，R=观测协方差噪声。
+        5、kalaman滤波+观测器(反馈方式与修正方式)-&gt;状态方程与输出方程-&gt;确定F、Q、R。
+        6、(观测器的输出-系统的实际输出)*K=观测器修正值，误差协方差矩阵自适应调整K，且不断迭代协方差矩阵。
+        7、A矩阵的确定-&gt;泰勒展开-&gt;系统线性化-&gt;微积分 离散化(算法执行周期)-&gt;确定F-&gt;P、K
+
+    4.1.4、IMU的EKF
+        1、过程模型(预测模型)-&gt;F(过程噪声Q)-&gt;预测值Hx(正态)=先验估计-&gt;均值1、方差1
+        2、量测模型-&gt;状态下产生的一组读数,传感噪声R-&gt;量测值Z=Hx(正态)-&gt;均值2、方差2
+        3、卡方检验-&gt;残差e-&gt;方差-&gt;应对加速度突变-&gt;权值量测趋于0,预测趋于1
+        4、渐消因子-&gt;陀螺仪零漂-&gt;记忆渐消(积分项-防止过度收敛)-&gt;无偏估计-&gt;调整协方差矩阵P(多状态变量的线性关系)-&gt;卡尔曼增益K
+
+        5、全阶观测器、降阶观测器=&gt;K反馈增益矩阵、G状态观测矩阵
+        离散化-&gt;EKF-&gt;预测(滞后性)-&gt;量测更新-&gt;互补滤波-&gt;一阶低通滤波
+        6、量测值+先验估计=&gt;后验估计
+        7、F、H为四元数矩阵变换,即F和H*v(陀螺仪/加速度) F状态转移矩阵、H观测矩阵   x’=Ax+Bu,z=Hx ,行运算   n系-导航坐标系,b系为载体坐标系
+        8、陀螺仪静态漂移+加速度动态误差-&gt;yaw角误差大
+        磁力计+陀螺仪-&gt;校正陀螺仪漂移-&gt;yaw
+        磁力计-&gt;稳定参考值-&gt;系统稳、快、准-&gt;鲁棒性提高
+        9、DWT内核时钟
+
+4.2、SMC(滑膜控制)、SMO(自适应滑膜观测器)：
+    1、反馈方式+修正方式
+    2、建模得系统状态x-&gt;定滑膜面函数s,趋近律函数s&#39;-&gt;得u(设计的控制器)&lt;-error计算更新校准因子  (状态空间方程)
+    3、核心
+    滑膜面函数(电流误差-收敛)、控制函数(系统)
+    滑膜面误差函数-&gt;函数控制器-&gt;修正E反(设计i的S函数)
+
+4.3、MRAS(模型参考自适应)：
+    1、自适应模型(模型常量参数以及模型输入的精度要求高；自适应机构要求高)、本质为PLL锁相环(微分-预估，传感器-量测)PI调节占比
+
+4.4、初始位置辨识(相位校准-标定初始位置)：
+    1、定义：转子磁极方向与A轴重合=转子零位，FOC产生超前90°电流Iq(最大转矩运行)-&gt;拖动转子旋转
+    2、编码器读数与转子角度偏差-&gt;负载下有概率过流(&lt;90°)、卡死(90°)、反转(&gt;90°)
+    3、开环拖动查找初始位置-&gt;局限性是转子必须转动查找初始位置
+
+    Clark与Park变换的等幅值与等功率系数：
+    等幅值的Clark变换系数=2/3(abc与ap坐标系合成矢量相等)  注：三相绕组每相有效匝数为N3，两相绕组每相有效匝数为N2，N*I建立磁链。
+
+4.5、无感低速下转子位置处理
+    1、旋转高频电压注入 的电压方程-&gt;含位置信息的电流响应方程-&gt;基波幅值低+载波(pwm)频率高，采用BPF滤除-&gt;正向序分量SFF滤除-&gt;转子位置跟踪观测器-&gt;负相序位置信息   
+    (适用:凸极率较大的内置式电机 IPMSM) 	 
+    
+    2、脉振高频电压注入d轴的电压方程-&gt;dq的估计系与实际系，得估计误差角-&gt;估计系下，含位置偏差信息的电流响应方程-&gt;q轴高频电流-&gt;BPF提取高频电流的位置信息
+    -&gt;LPF对转子位置估算误差进行过滤-&gt;位置跟踪观测器/PLL重构转子信息 (适用:使用凸极率很小甚至隐极型的标贴式电机 IPMSM)
+    
+    3、龙伯格(Luenberger State Observer)全状态观测器和PLL增益，替换掉滑膜观测器
+
+4.6、HALL传感器
+    1、转速：
+        电频率W_dpp(FOC周期下-&gt;角度增量)-&gt;机械频率W_0.1hz
+    2、位置：
+        FOC周期14khz=&gt;电频率dpp-&gt;电角度-&gt;机械角度
+        90khz=&gt;TI1中断-&gt;6扇区位置校准、方向校准-&gt;电角度-&gt;更新电频率dpp   
+        初始化位置校准(同步电角度：A相反电动势最高点定为0°与H1跳变跨过的角度)
+</code></pre>
+<p><span id="section5-foc"></span></p>
+<h4 id="五、电机算法综述-SVPWM、弱磁扩速、观测器、无感启动算法"><a href="#五、电机算法综述-SVPWM、弱磁扩速、观测器、无感启动算法" class="headerlink" title="五、电机算法综述(SVPWM、弱磁扩速、观测器、无感启动算法)"></a>五、电机算法综述(SVPWM、弱磁扩速、观测器、无感启动算法)</h4><pre><code>5.1、SVPWM、弱磁扩速
+    1、每个开关周期-&gt;功率开关&lt;-&gt;矢量合成-&gt;小角度增量λ-&gt;下一开关周期更新Ta_on、Tb_on、Tc_on值  比如:n次开关周期,λn=60°
+    SVPWM会在1开关周期(载波周期)进行一次运算  fpwm载波-&gt;载波比
+    弱磁扩速-&gt;u恒,初始转矩-&gt;加速-&gt;电枢e反++,电枢i--，F=BIL,i=0则无法加速-&gt;id++,iq--,磁通B--, 恒功率加速
+
+    2、扇区-&gt;下桥臂功率管-&gt;TIM1_CH4溢出TRGO-&gt;ADC中断-&gt;降fpwm/降调制比-&gt;FOC-&gt;SVPWM
+    Ua sqrt(3) T、Up T-&gt;X Y Z-&gt;定扇区-&gt;算CCRx-&gt;CCR4触发ADC开始采样(下一轮)  ADC采样转换触发与ADC中断外部TRGO触发
+    Tpwm=Ts开关周期-&gt;正脉冲保持时间-&gt;中心对齐-&gt;x2
+
+5.2、观测器
+    1、MPC模型预测控制、LQR线性二次调节器-最小化成本函数、MRAS模型自适应-&gt;参数(不带待辨识参数)/可调模型(带辨识参数w)+参数自适应律-&gt;可调模型的输出跟踪参数模型的输出-&gt;error-&gt;PI跟踪
+    2、FOC-&gt;解耦系统-&gt; SVPWM-&gt;f功率开关管-&gt;采样点与换相点
+    无感观测器-&gt;反电动势模型-&gt;[p v]
+    EKF-&gt;非线性与离散化-&gt;x(k+1)=f(xk)+wk求jacobi-&gt;F-&gt;y=kx,则k为y对x的单雅可比
+    SMO、SMC-&gt;z=e反^
+
+5.3、无感启动算法
+    1、开环强拖-&gt;初始位置辨识-&gt;转子磁极方向与A轴重合定零位(HALL A与e反最大点)-&gt;功率开关管与Ua Ub Uc关系-&gt;ap与dq变换
+    2、旋转高频电压注入-&gt;模型估计误差-&gt;转子位置跟踪观测器(状态反馈-仪赖模型参数)-&gt;强动态响应
+    3、脉振高频电压注入-&gt;跟踪观测器/PLL(输出反馈-依赖反馈误差,即PI参数)-&gt;鲁棒性强
+
+    核心:不大的u(k)-&gt;较小的error、全状态反馈-&gt;性能泛函最大-&gt;最优控制  H-&gt;u’-&gt;J-&gt;u-&gt;x-&gt;J’
+    反馈且收敛(零极点对消)
+</code></pre>
+<p><span id="section6-foc"></span></p>
+<h4 id="六、FOC算法实现-标幺化FOC相关参数、FOC本质、ST-SVPWM与dpp补偿、带宽概述"><a href="#六、FOC算法实现-标幺化FOC相关参数、FOC本质、ST-SVPWM与dpp补偿、带宽概述" class="headerlink" title="六、FOC算法实现(标幺化FOC相关参数、FOC本质、ST_SVPWM与dpp补偿、带宽概述)"></a>六、FOC算法实现(标幺化FOC相关参数、FOC本质、ST_SVPWM与dpp补偿、带宽概述)</h4><pre><code>6.1、标幺化FOC参数(θ、We、V/F、I/F、HALL、PLL、Uao、UaN、Uab、磁链、FOC本质)
+    1、θ量化:机械角度变化=&gt;rad/s * s/rad=&gt;伪机械转速=&gt;电角度We=&gt;*极对数=&gt;量化2pi=&gt;FOC周期
+    2、死区:一般的MOS管，它的关断时间大于开通时间很多，反向恢复时间则更长，编程时往往选最大的时延考虑
+    3、载波-调制波、平均值等效原理-7段式SVPWM
+    4、程序配置-&gt;单路PWM周期T-&gt;中心对称模式-&gt;对称PWM周期2T =&gt;fpwm=2Fpwm对称频率    (即程序配置单路PWM的频率:T_PWM=CLK/(PSC+Reload))
+    ex:假如我们要求中心对称PWM对的频率是8K，那么他非中心对称的PWM(单路PWM)的频率就是2 * f_PWM,那么，中心对称的PWM到达中点的时间周期就是1/(2 * f_PWM)
+
+    5、HALL按电角度安装--极对数=霍尔真值循环次数--转子电气位置   
+    6、对齐强拖:V/F爬坡启动-&gt;Ud=0,Uq=x,初始化θ_e=0,θ_e自增    I/F-&gt;V/F上加入电流环-&gt;Id=0,Iq=x   本质:电角速度=电频率=电角度频率(W_e)的爬坡启动
+        (1)恒压频比V/F:n=60*f/p,2pi*f=w
+        为了恒转矩变速(气隙磁通=磁链不变),V/E=C成线性相关,V=(V1-VO)/(f1-f0)*f+V0,V0为低频时的补偿量(因低频下,电阻和漏感压降不能忽视,按Uq公式)
+        缺点:无法跟随负载转矩变化,最佳V/F难整定,且容易过流
+        
+        (2)流频比I/F∶转速开环,电流闭环,负载转矩匹配能力强.  目标速度v_tar/t=Acc,n=60*f/p,2pi*f=w=&gt;θe
+        0e-pi/2=0e^=&gt;使d^q^滞后dq系pi/2,且两系相位差。θ_L决定了转矩大小Te
+        Iq^越大,转矩Te越大,则稳态抵抗负载变化越强，θ_L使&quot;相角裕度&quot;更大(负载导致θ_L变大)。
+        
+        双dq与I/F，定Iq，相位差裕度θ_L，系统可跟踪变负载转矩(Uq)，即抵抗负载变化能力。实物坐标系受负载转矩影响，虚拟坐标系理想化。
+
+    7、霍尔传感器的相位校准-试凑法/IF对比电角度N波与霍尔离散真值波形估算法、插值拟合法-&gt;电角度的校准与补偿--HALL/a与w微分
+    8、锁相环PLL跟踪法:HALL信号-&gt;低通滤波器-&gt;估算We(不要引入PI环,可采用插值法的We)-&gt;滤波值θ_e    PI的参数自整定(插值法的电角速度ωe作为ωc带入公式)--依据设计的二阶系统
+    9、堵转保护:20ms无HALL跳变
+    10、比如dpp一开始单位是（整形角度/s），那么θ_dpp+=dpp*Δt，程序对这个乘法进行了分布处理，实际等效是把dpp的单位整成（整形角度/每中断周期），
+    所以在霍尔中断里θ_dpp+=dpp而无需继续乘以Δt
+
+    11、双ADC采样-&gt;32768=3.3V   
+    12、TIM区别更新事件及其触发的TRGO、更新中断
+    13、hz转子电频率=pole*w_机械-&gt;x60=rpm转速(圈/min)  n=60*f/pole(60是因为频率单位s)  dpp=每控制周期的角度变化量(hz&lt;-&gt;dpp公式转换)
+    14、转速:转子电频率dpp、rmp
+    15、前提:2pi=&gt;65535   hall cc1 interrupt-&gt;hElectrical_Angle校准、FOC周期补偿-&gt;调psc改变计数精度(溢出++,捕获值及计数频率低阈值--)-&gt;预装载与更新的滞后性要特别处理
+    16、转子电频率dpp-&gt;hall捕获-&gt;hall cc1 interrupt-&gt;psc过大/速度低于阈值/首次捕获,清零   最低转速--HALL最大定时器周期
+    hall cc1 interrupt-&gt;控制周期内的理论脉冲个数-&gt;dpp转速hRotorFreq_dpp(控制周期)    hElectrical_Angle 控制周期 补偿-&gt;hRotorFreq_dpp
+    //-----------------------------------------------------------------------------------------------------------
+
+    17、端电压Uao、相电压UaN、线电压Uab-&gt;滤波马鞍波   三相电压-&gt;三相电流-&gt;磁场定向(SVPWM-&gt;端电压)
+    18、本质:强耦合系统解耦，非线性系统线性化处理 
+    不同坐标系间的变换=&gt;clark:三相-&gt;两相  park:电流解耦(φ定值-&gt;Id、Iq均恒值),q轴超前d轴90°  幅值不变(防过调制)
+    Id平行定子磁场,Iq则垂直.   
+    φf :磁链系数，单位为V·s/rad,指的是单位rad/s机械转速下能产生的电机反电动势(正弦波或梯形波)最大值
+    φ:定子磁场(定子三相初始相位)和转子磁场的角度,为90°转矩最大-&gt;Id、Iq均恒值
+    标贴式:id=0法  参数配凑法(PI串级系统-频率响应)
+
+    //-----------------------------------------------------------------------------------------------------------
+    19、!!本质:FOC控制要生成一个超前转子(d轴)90度的磁场!!   !!Is产生的磁场!!
+    所有的变换最终结果都是为了生成超前转子90度的磁场，而电角度只是为了提供转子的位置，方便磁场在各个坐标系之间进行变换。
+    相位校准:定义零电角度=d与alpha的夹角=&gt;开环强拖校准=&gt;thata=0,Ud=x,Uq=0
+    //-----------------------------------------------------------------------------------------------------------
+
+    20、HAll:Update Event(中心对齐=ARR/2、0)-&gt;TRGO输出-&gt;ADC采样-&gt;确保每个PWM周期进行ADC采样
+    TRGO信号会在每个PWM周期的开始/中点(即更新事件发生时),触发ADC采样
+
+    溢出更新中断:计数溢出-&gt;TRGO更新事件-&gt;ADC中断
+    CC4输出比较事件(非CC4中断):CCR4比较事件-&gt;ADC采样转换(Disable EXT ADC)-&gt;Updata中断(ReEnable EXT ADC)
+    HALL预定位电角度=&gt;外同步加速=&gt;运行
+    电角度校准:65536~360°   补偿:hRotorFreq_dpp(dpp=每个FOC周期电角度的变化)
+    HALL捕获次数hCaptCounter  捕获超时HallTimeOut(溢出造成)
+
+    HALL定时器溢出处理bGP1_OVF_Counter/未溢出处理-&gt;定时器捕获hCapture、hPrscReg、bDirection-&gt;滑动滤波出hRotorFreq_dpp
+    (注:捕获超时、分辨率太低、速度太慢、第一次捕获-&gt; dpp=0)  dpp=N_foc/N_hall=(psc+1) *cnt = 单位pwm周期(1hz)
+    (psc+1)*cap个timer时钟周期(1/CLK)  f/pole=&gt;hz=&gt; x 2pi =&gt; w
+
+    21、单路f_pwm=f_tim=32khz =&gt; ARR=clk/((psc+1)*对齐f_pwm)  对齐f_pwm=16khz=f_adc=f_电流环
+    同步电角度(相位校准)=&gt;定位电机A相的反电动势最高点作为电角度的0°=&gt;即HALL信号的相角滞后/超前
+    计数划分:总计数f_hall/算法计数f_foc = pwm周期的分计数频率f_0  f_0*θ=w_e  θ对于F1=&gt;单边沿HALL(仅5 3 6状态--513264)=&gt;65536/3
+
+6.2、θ和W-编码器、FOC基本作用(Encoder、绝对式ABZ)
+    1、 Encoder:定义:电机A相的反电动势最高点为电角度0°(D轴与A相的重合位置)
+    编码器零位与电机零位安装误差(4极对数=0~2pi重复4次,FOC算法只需0~2pi确定转子位置即可)--编码器-&gt;绝对位置信号
+    0°相位校准-&gt;4个机械角度-&gt;angle变化(0-2pi-0)-&gt;编码器变化量-&gt;相位校准.
+
+    绝对式ABZ:零位脉冲Z(转1圈)-&gt;编码器掉电-&gt;位置闭环使用
+    增量式:位移-电信号-计数脉冲-角度(位移)
+    注:绝对式机械角度位置和电角度位置不一致-&gt;编码器脉冲不定-&gt;4*1000脉冲与2pi映射关系-&gt;正弦值固定(因已进行相位校准)-&gt;FOC算法
+    ex:θ_e=90°-&gt;脉冲(4*1000*90/360/4),除4是因为电角度-&gt;绝对位置对应的脉冲数
+
+    //-----------------------------------------------------------------------------------------------------------
+    2、FOC的dq轴-&gt;矢量圆-&gt;Uq、Ud/θ_e变化       
+    (1)Uq、Ud恒定,θ_e按矢量圆变化=&gt;Valpha、Vbeta=&gt;Sector and Time=&gt;SVPWM
+    (2)Uq、Ud按相电流变化,θ_e由Sensor恒定=&gt;Valpha、Vbeta=&gt;Sector and Time=&gt;SVPWM
+    利用相电流的线性变化调整Id、Iq=&gt;Uq、Ud  加入速度环,恒定Iq(最大转矩控制),配合Iq_fb=&gt;Iq_error=&gt;Uq
+    //-----------------------------------------------------------------------------------------------------------
+
+6.3、θ和W的单位量化、SVPWM算法实例、电流采样点(!!重要!!)
+    //-----------------------------------------------------------------------------------------------------------
+    1、电气速度W_e(Hz):每秒的转速(Hz=圈/s)=每秒的旋转次数      电角速度(dpp):每度的脉冲数(脉冲/度)--&gt;每个FOC的电角度变化量   
+    如电气速度W Hz,测量频率f_测量 Hz =&gt; W*360/f_测量=dpp  &lt;= W*t=W/f=θ
+
+    机械速度W_m(rpm、Hz):每分钟的转速  W_e=P*W_m(Hz) 
+    rpm(圈/min)=360°/60s=6°/s=&gt;Hz(圈/s)=&gt; W_m=60*W_m(rpm)
+
+    最小周期=Fclk/Fw_m,针对HALL的θ=60°一次捕获中断
+    w=360°*f_wm(圈/s的数值量化) = θ*Fw_m(仅需考虑60°) 
+
+    1[s16degree]=360/65536  机械转速0.1Hz=0.1rps=&gt;x6=rpm(单位换算0.1x60=6)
+    dpp=w_e/f_foc=θ_e*f_hall/f_foc (注:补偿角度=&gt;θ_e/n , n=f_foc/f_hall)
+
+    2、周期计数T=2500=Ts/2,单路PWM与对齐PWM
+    SVPWM:画ap和xyz图-&gt;参数方程-&gt;确定扇区  扇区矢量分解+平均值等效原理-&gt;作用时间
+
+    /* Valpha、Vbeta矢量 ap */
+    wUAlpha = Stat_Volt_Input.qV_Component1 * T_SQRT3; 
+    wUBeta = -(Stat_Volt_Input.qV_Component2 * T);    
+    区别:wUAlpha = Valfa_beta.qV_Component1 * (int32_t)pHandle-&gt;hT_Sqrt3; 
+
+    /* 矢量划分扇区 xyz(参数表达式) */
+    wX = wUBeta;
+    wY = (wUBeta + wUAlpha) / 2;
+    wZ = (wUBeta - wUAlpha) / 2;
+
+    3、T_周期计数/2 抬升-&gt;T取了4倍-&gt;T/8  原公式(((T + wX) - wZ) / 2)   注:131072=2^15*4,Q15与公式T取了4倍,且1/2^15≈0
+    T=单路PWM计数周期=Ts/2
+    hTimePhA = (T / 8) + ((((T + wX) - wZ) / 2) / 131072); // 处理器的运算精度(q1.15与q0)，结果仍然可对公式14-48
+    hTimePhB = hTimePhA + wZ / 131072;
+    hTimePhC = hTimePhB - wX / 131072;
+
+    注:hPWMPeriod = Timer_Fclk/Fpwm=&gt;中心对齐PWM的计数周期Ts=2T(单PWM)  Timer_Fclk/(2*Fpwm)=&gt;单路PWM的计数周期
+
+    2621442=2* 2^15*4
+    //-----------------------------------------------------------------------------------------------------------
+    4、中心对齐计数,采样点:ARR前-&gt;CCR4上升沿触发ADC,ARR后-&gt;改ADC为下降沿触发(本质:ADC仅在CCR4的上升沿/下降沿触发采样中断)
+    前提:TIM更新事件会把FOC算的各相CCR加载入下一周期,REP_RATE决定PWM和FOC频率关系.  
+    协调好Fpwm+重复计数器-&gt;TIM的update频率-&gt;可能让FOC对CCR的处理过程被打断.
+    ADC采样+FOC在TIM下溢中断前需完成(REP_RATE=1,即1PWM周期对应1FOC周期)
+
+    校准对齐后=&gt;编码器接口定时器的计数值 注:编码器0°与电角度0°的偏差,取编码器脉冲变化与电角度变化下的偏差
+    //-----------------------------------------------------------------------------------------------------------
+
+    5、F_hall与F_foc-&gt;dpp-&gt;电角度补偿1
+    dpp=60°*F_hall/F_foc  60°-&gt;65535/6  注:foc周期内电角度累加量
+    F_hall=F_tim_hall/(cap*psc),
+
+    W_dpp=W_01hz * 65536/(10 * F_foc)  
+    推导: 1dpp=s16degree*F_foc=2pi/65536*F_foc(rad/s) 
+    参数方程有,W_rad/s=W_dpp*2pi/65536*F_foc(rad/s), W_dpp=W_rad/s*65536/(2pi*F_foc)(dpp)
+    dpp-rad/s-&gt; Hz -&gt; 0.1Hz=0.1RPS(每秒完成旋转的次数)=6RPM   1RPS=W_r/s=W_01Hz/10=W_rad/s / 2pi
+    综上得,dpp与01Hz关系
+    r/min=2pi/60 rad/s
+
+    n=F_foc/F_hall次FOC算法后,仍未捕获HALL校准-&gt;实际电角度(HALL)与虚拟电角度(dpp积分)同步
+    角度变化量分配到-&gt;F_speed/F_foc-&gt;角度补偿2  (HALL_angle-DPP_angle)/(F_speed/F_foc)  注:速度计算周期计算补偿量
+
+    针对速度=&gt;dpp=Δθ_e*F_foc=&gt;FOC周期内角度的变化量  --量化--  针对角度补偿=&gt;dpp=θ_e/n=θ_e*F_hall/F_foc 
+
+    dpp=W_e/f_foc=Δθ_e/n , n=f_foc/f_hall , W_e=Δθ_e/T_hall=Δθ_e*f_hall      We*T_foc=Δθ_foc
+    周期T=(psc+1)*cnt  
+    
+    //-----------------------------------------------------------------------------------------------------------
+    6、带宽:比如，速度环带宽-&gt;高响应3khz-&gt;伯德图指速度环所能响应的最快的指令频率.
+    滤波器的截止频率:比如，低通滤波，幅值(幅频)衰减到-3dB,相位(相频)滞后45°的频率点.
+    环路带宽:比如，速度环-&gt;环路整定成一阶低通滤波，其截止频率即环路带宽.  注:执行频率&gt;设计的环路带宽.
+    低速一般指5%的额定速度. 
+    载波频率(三角波=计数频率)=开关频率，调制波(正弦波)   SVPWM:计数脉冲+CCR=&gt;PWM=&gt;正弦调制波
+
+    减速:短路制动;限制发电转矩(电容储能);增大发电转矩快速减速(电容储能),制动电阻耗能(能耗制动).
+    
+    幅频特性:频带宽-&gt;响应快-&gt;引入高频
+    相频特性:相应的是上一次，系统也易不稳定
+
+    7、标幺化(单位化):物理量的无量纲化(便于数学运算)   线性变换(维度变换=基变换)  标幺值=实际值/基准值
+    Q运算:小数的定点运算(主要考虑硬件上的部署)
+    0~2pi-&gt; /2pi-&gt;标幺化0~1-&gt; *2^15-&gt;定点化0~32768
+    本质:标幺化范围[-1,1] -&gt; [-32768,32768]
+
+    电流=ADC原始值/4096*3.3/采样电阻阻值/运放放大倍数
+    Uref &lt;= Udc/sqrt(3)
+    
+    电流环:
+    D轴:阶跃响应  Q轴:空载线性响应  堵转:线性响应
+    空载-&gt;积分项迅速饱和-&gt;堵转-&gt;过冲-&gt;解决方法=采用抗击积分饱和PI  堵转与转矩
+
+    位置环:
+    (1)w-&gt;p(θ)   w=θ/t
+    (2)a、w-&gt;p(θ)   变加速度的6点梯形法
+    //-----------------------------------------------------------------------------------------------------------
+The End 2025.1.14
+</code></pre>
+<p><span id="section7-foc"></span></p>
+<h4 id="七、深入无感-永磁同步电机书籍总结-李雅普诺夫稳定性、HFI、SMO、龙伯格观测器、DTC、MRAS、EKF、线性二次型调节器LQR、非线性磁链观测器"><a href="#七、深入无感-永磁同步电机书籍总结-李雅普诺夫稳定性、HFI、SMO、龙伯格观测器、DTC、MRAS、EKF、线性二次型调节器LQR、非线性磁链观测器" class="headerlink" title="七、深入无感(永磁同步电机书籍总结)(李雅普诺夫稳定性、HFI、SMO、龙伯格观测器、DTC、MRAS、EKF、线性二次型调节器LQR、非线性磁链观测器)"></a>七、深入无感(永磁同步电机书籍总结)(李雅普诺夫稳定性、HFI、SMO、龙伯格观测器、DTC、MRAS、EKF、线性二次型调节器LQR、非线性磁链观测器)</h4><pre><code>7.1、综述
+    1、反电动势
+        1.1、滑模观测器（SMO）：通过滑模控制估计反电动势,进而计算转子位置和速度,鲁棒性强。
+        1.2、模型参考自适应系统（MRAS）：利用参考模型和可调模型的误差,自适应调整转子位置和速度。
+        1.3、扩展卡尔曼滤波（EKF）：通过非线性系统状态估计,获取转子位置和速度。
+    2、磁链
+        2.1、磁链观测器：通过测量电压和电流估算磁链,进而推算转子位置和速度。
+    3、高频信号注入
+        3.1、高频电压注入：注入高频电压信号,利用电机凸极效应提取转子位置信息。
+        3.2、高频电流注入：注入高频电流信号,通过响应电流估算转子位置。
+    4、人工智能
+        4.1、神经网络：利用神经网络学习和估计转子位置和速度。
+        4.2、模糊逻辑控制：通过模糊逻辑推理估算转子位置和速度。
+    5、其他
+        5.1、电感变化检测：通过检测电感变化估算转子位置。
+        5.2、零速和低速算法：针对零速和低速工况设计的特殊算法,如高频注入法。
+    6、选择
+        精度要求：高精度应用通常选择EKF或高频注入法。
+        计算资源：计算资源有限时,SMO或MRAS更为合适。
+        运行速度：低速或零速时,高频注入法效果更好。
+    7、无感顺序
+        HALL-&gt;VF-&gt;龙伯格、滑膜、EKF
+        
+7.2、目录
+    理论补充:
+    (1)李雅普诺夫稳定性
+        第一法:状态/输出稳定-&gt;特征方程/u-y输出有界
+        第二法:储能与消耗-&gt;能量函数(标量函数V)-&gt;V的正定,V偏导(半)负定-&gt;李雅普下稳定/渐进稳定  注:仅是判稳的充分条件
+        V选取:正定的标量函数,存在一阶偏导;一般取二次型V=x_T*P*x;平衡状态的邻域内的局部运动;高阶非线性或者时变系统.
+
+        应用:
+        线性定常系统-&gt;特征方程-&gt;矩阵A-&gt;实对称矩阵Q(可取单位矩阵)-&gt;实对称正定矩阵P-&gt;李雅普诺夫方程
+        线性时变系统-&gt;特征方程-&gt;矩阵A-&gt;连续实对称矩阵Q(可取单位矩阵)-&gt;连续对称正定矩阵P-&gt;李雅普诺夫方程
+        
+        线性定常离散时间系统-&gt;特征方程-&gt;矩阵G-&gt;单位圆内-&gt;实对称矩阵Q(可取单位矩阵)-&gt;实对称正定矩阵P-&gt;李雅普诺夫方程
+        线性时变离散时间系统-&gt;特征方程-&gt;矩阵G-&gt;单位圆内-&gt;实对称矩阵Q(k)(可取单位矩阵)-&gt;实对称正定矩阵P(k+1)-&gt;李雅普诺夫方程
+        
+        非线性系统-&gt;雅可比法-&gt;状态方程f(x)-&gt;雅可比(jacobi)=J-&gt;正实对称矩阵P-&gt;正定矩阵Q-&gt;大范围稳定.
+        (V(x)=f(x)_T*P*f(x) =&gt; x属于无穷,V属于无穷,则大范围渐近稳定)
+
+        非线性系统-&gt;变量梯度法-&gt;V的梯度(方向导数)-&gt;构造出V(x)-&gt;旋度为0(矢量-&gt;正交基-&gt;线性不相关-&gt;V(x)曲线积分与路径无关).
+        V(x)的全导为(半)负定-&gt;待定系数求出梯度算子-&gt;对梯度积分(要求宣读为0)-&gt;构造出V(x)-&gt;正定则大范围渐进稳定.
+        (V对x偏导-&gt;jacobi矩阵为对称-&gt;旋度为0)
+
+        信号处理:低通滤波器-&gt;信号延迟  传函-&gt;幅频和相频特性-&gt;幅值/相位补偿
+        注:本质为P、Q满足的条件与A/G的特征方程根等效-&gt;系统收敛稳定.
+
+    1、高频注入
+        1.1、高频注入法的目的是通过向电机绕组中注入高频电压信号(PWM调制如正弦波或方波),利用电机的凸极效应(转子磁路不对称性)提取转子位置信息。
+        具体流程如下：
+        信号注入：在电机驱动电压的基波激励中叠加一个高频电压信号激励（例如10 kHz的正弦波或方波）。
+        电流响应检测：通过ADC采样电机的电流响应,提取高频电流分量。
+        位置解算：根据高频电流分量的幅值或相位变化,解算出转子位置。
+        核心:逆变器的开关特性,支持高频信号的叠加
+    
+        本质：高频电压叠加到基波信号上施加给三相绕组,相应的高频电流中会携带转子位置信息,利用带通滤波器把电流信号处理后进行提取-&gt;位置信息
+        PMSM凸极效应Ld!=Lq-&gt;Te多出磁阻转矩-&gt;MTPA-&gt;转子位置信息
+
+        1.2高频载波信号的选择:f_信号频率 &lt; f_开关频率/2   电流响应信号=载波信号和注入信号(高频):LPF低通  BPF带通  SFF高通
+        SFF:通过把高频电流变换到与注入信号的同步旋转坐标系,正相序变直流,可以常规高通滤波器滤除.  (ap-&gt;高通滤波器-&gt;dq)
+
+        1.3、旋转高频注入(dq轴):高频电压信号注入-&gt;电流响应-&gt;负向序分量含位置信息-&gt;BPF(滤幅值)、SFF(正负相序分离)-&gt;跟踪误差信号-&gt;转子位置跟踪观测器
+        转子位置跟踪观测器:转子位置和估计位置的传函-&gt;实质是利用Icn和角度误差的关系(书上6-13),位置误差为0,则跟踪误差信号表达式为0-&gt;控制器设计PI
+
+        1.4、脉振高频电压注入(d轴):无凸极效应(凹极Ld=Lq)的表贴式电机-&gt;d轴注入高频信号,Ld!=Lq-&gt;凸极效应
+        频率和幅值的高频电压信号激励-&gt;BPF-&gt;响应出高频电流Iq-&gt;LPF-&gt;转子位置跟踪误差(跟踪方程6-24)-&gt;位置跟踪观测器/PLL-&gt;位置信息
+        位置跟踪观测器=I和角度误差的关系、PLL=角度误差跟踪
+        !!位置跟踪观测器/PLL-&gt;核心是利用I误差和角度误差的关系-&gt;PID控制!!
+        ps:高频注入d轴(脉振法),电机不会转.  !!参考系dq!!---估计/实际转子同步旋转坐标系
+
+    2、滑膜控制:系统状态变量-&gt;滑膜面函数 控制函数-&gt;控制系统受扰动能尽快回到滑模面
+        ps:αβ轴电流微分、电流大小、电压大小、定子电阻、定子电感-&gt;反电动势,但抗干扰能力弱
+        
+        2.1、滑膜面函数-&gt;S(x)=[error_ia error_ip]-&gt;求导-&gt;error收敛&lt;-控制函数Ua=L1*sign(x)-&gt;Ea-&gt;PLL-&gt;θ和W
+        高频抖动-&gt;控制函数改连续的L1*sat(x)-&gt;PLL引入
+        预定位-&gt;外同步加速(I/F强拖)-&gt;运行 ps:防止Te突变-&gt;Δθ=θ_smo-θ_force,调整Id、Iq
+        PI参数整定:零极点相消-&gt;Kp、Ki-&gt;开环电流环成纯积分环节,然后闭环传函成为一阶惯性环节. 
+
+        2.2、SMO:电流误差-&gt;ap坐标系-&gt;重构反电动势-&gt;转子位置和速度信息  注:SMO+自适应律-&gt;适应转速W-&gt;鲁棒性更强
+
+        2.3、SMC:滑模面(取误差)-&gt;趋近律-&gt;控制函数,使得系统状态能够沿滑模面运动   
+        误差信号,如:速度误差或位置误差    变结构,可代替PI控制器,李雅普诺夫函数证稳定性.
+
+        2.4、滑膜观测器中,当电流估计误差趋近于零时,切换项Z的等效值会趋近于实际的反电动势,E=V(估算)=Z(控制律)
+        V=Veq+k?sign(S):滑模控制通过等效控制项(滑模面)和切换项(扰动),实现鲁棒跟踪,确保系统在存在E时仍稳定.
+        等效控制项负责系统的标称动态，而切换项提供鲁棒性，对抗扰动和不确定性。
+        滑模面下-&gt;切换项平均值=等效控制项(面积等效原理)
+        ps:控制率是可选的,意味V和Z属于等效控制量(类似方波等效正弦波).
+
+        2.5、Z趋近律-&gt;bang-bang控制快速调节Is_估计-&gt;Z=|E_max*sgn(S)|-&gt;LPF(一阶惯性)取等效控制量-&gt;&lt;Z&gt;=E_估计-&gt;Z在此基础上迭代(类似梯度下降)
+        如:Is_偏差&gt;0,Z调整dIs_偏差/dt&lt;0,反之Is_偏差&lt;0,同理.
+        注:Z对E_估计的不断修正(方式)
+
+    3、龙伯格观测器(状态观测器)
+        3.1、误差状态方程-&gt;观测器建立
+
+    4、直接转矩控制(DTC)
+        4.1、静止坐标系:磁链和转矩角(定子磁链与转子磁链)-&gt;控制定子磁链,改变转矩角-&gt;转矩增量   
+        转矩环和磁链环-&gt;扇区-&gt;Bang-Bang控制-&gt;空间电压矢量  注:转矩角增量只和定子磁链角增量有关.
+        磁链和转矩是否增/减-&gt;Bang-Bang-&gt;按扇区选空间电压矢量-&gt;PWM.
+        核心:不同扇区-&gt;选择不同空间电压矢量-&gt;影响磁链和转矩(增大/减小)-&gt;DTC开关表-&gt;PWM开关  磁链-转矩角-转矩增量
+
+    5、模型参考自适应(MRAS)
+        5.1、MRAS的目的是利用参考模型和可调模型的误差,自适应律辨识电机参数。
+        参考模型:传感器采集(可采)   可调模型:状态空间方程表示  自适应律:电流误差,求We
+
+    6、拓展卡尔曼滤波(EKF)
+        6.1、离散化状态方程-&gt;误差协方差矩阵-&gt;正态分布-&gt;预测/更新状态和输出方程
+        反馈增益矩阵:反馈方式与修正方式-&gt;状态估计
+
+        6.2、正态分布:预测值  测量值-&gt;最优输出
+
+        6.3、详细参考(四、无感控制算法--4.1)
+
+    7、
+        观测器是估计状态量，自适应控制是估计常值参数，类似最小二乘法的估计。
+        鲁棒控制:SMC、High Gain、High Freq
+
+    8、线性二次型调节器(LQR)
+   
+    9、非线性磁链观测器(VESC)
+
+    10、反电动势过零点(BLDC)
+        10.1、无刷直流电机(BLDC),HALL的六步换相法.
+
+        10.2、HALL检测的换相与反电动势过零点存在滞后30°电角度.
+        核心是:三相绕组BEMF过零点+换相点与转子位置关系，三段式启动.   相反电动势Ean=Ua0+Un0=0,且Un0=Vbus/2.
+        软件:ADC采样母线电压,算中性点电压,与端电压比较-&gt;反电动势过零点.  浮空相-&gt;端电压=Vbus/2-&gt;过零点
+        硬件:中性点电压+端电压-&gt;比较器-&gt;反电动势过零点.
+        注:检测过零相的正负，延时30°电角度(θ=W*t).
+        当端电压从大于中性点电压变成小于中性点电压，或端电压从小于中性点电压变成大于中性点电压时，即为过零点.
+        无感BLDC本质:确定啥时候才能进行换相.
+
+    11、无差拍电流预测
+</code></pre>
+<p><span id="section8-foc"></span>  </p>
+<h4 id="八、电机基础补充-FOC控制参数-力矩、磁链、SVPWM幅值关系-参考系-、ADC标幺化、电机特性参数-电机功率、气隙磁场、Te、零极点对消"><a href="#八、电机基础补充-FOC控制参数-力矩、磁链、SVPWM幅值关系-参考系-、ADC标幺化、电机特性参数-电机功率、气隙磁场、Te、零极点对消" class="headerlink" title="八、电机基础补充(FOC控制参数-力矩、磁链、SVPWM幅值关系(参考系)、ADC标幺化、电机特性参数-电机功率、气隙磁场、Te、零极点对消)"></a>八、电机基础补充(FOC控制参数-力矩、磁链、SVPWM幅值关系(参考系)、ADC标幺化、电机特性参数-电机功率、气隙磁场、Te、零极点对消)</h4><pre><code>8.1、磁阻和永磁电机的矢量控制(力矩、磁链、SVPWM幅值关系(参考系)、ADC标幺化)
+    1、本质:控制电磁铁合成的磁场的角度和磁场大小(磁场矢量控制,即电压矢量大小/方向控制). 电磁场角度始终和被拖动磁铁的N指向S的线形成一个夹角.
+    区别:铁与磁铁,铁的旋转更多看和电磁铁这条线的夹角，而对电磁铁的方向不挑剔.
+    
+    2、Id增加转子转动的阻尼,负Id减少阻尼-&gt;弱磁(防退磁)
+    
+    3、凸极电机的MTPA中电流Iq超前q轴,磁阻小了电感就大(HFI极性辨识) -- 电磁铁和铁的吸引
+    4、T就是你的pwm的一个完整的发波周期。转子产生的感应电动势是落在转子的q轴上的.
+
+    5、控制Uq幅度,幅度大过当前转速,转子磁铁感应出来的q轴感应电动势,自然就加速了;幅度小过当前转速下,转子磁铁感应出来的q轴的感应电动势,那就减速了.(Uq实现刹车制动)
+
+    6、过调制:在一个为T的PWM周期内，不可能实现两个非零矢量各自作用的时间T1和T2之和大于T.  过调制/电流环pi输出幅度/svpwm输入做等比缩放
+    
+    7、磁链x电流=力矩，电感x电流=磁链(电感磁链)
+    电磁力矩=d轴的总磁链xq轴的总电流(等幅值变换*极对数=1.5*P)，d轴的总磁链=(Lq=Lq,无磁阻磁链,d轴永磁链的永磁转矩)
+
+    8、SVPWM幅值关系
+        (1)abc为端点，n为星接点，g为地点，那么实际上Uab是正弦的，Uan是正弦的，而Uag在SVPWM中是马鞍的，在SPWM中还是正弦的.
+        线电压指Uab，Uac，Ubc，相电压指Uan, Ubn, Ucn，n指的等效的星接点；端对地电压指Uag，Ubg，Ucg，g是指地.
+
+        (2)SVPWM:直流母线电压利用率=输出线电压波形幅值/直流母线电压=1 
+        三个空间位置差120°，相位还差120°的正弦相电压的空间矢量合成的矢量电压的幅值是相电压幅值的3/2倍--&gt;相电压2/3*Vdc * 3/2=Vab=Vref  
+        相电压幅值*sqrt(3)=线电压幅值(前提是正弦波)。
+        
+        假设Uan = A*sin(x), Ubn = A*sin(x - 120),则有Uab = Uan - Ubn = sqrt(3)*A*sin(x+30), 
+        这里我们能看到Uab的波形的幅值是 sqrt(3)*A，所以相电压幅值得到线电压幅值乘以sqrt(3)就是这么来的.
+
+        (3)如果认为U(1~6) 是等于2/3Udc，那我们认为Uref最大只能到2/3Udc（六边形），或者2/3Udc * sqrt(3) / 2（内切圆）；
+        如果认为U(1~6) 是等于Udc，那我们认为Uref最大只能到Udc（六边形），或者Udc * sqrt(3) / 2（内切圆）；
+
+        如果认为是Udc这是在三相系中看的结果，也是在等矢幅变换后的x-y坐标系中看的结果；
+        如果认为是2Udc/3,这就是在等幅值变换的alpha-beta坐标系中看的结果；
+        不论哪种结果，改变不了占空比变化的规律.
+
+        SVPWM线电压幅值Vdc SPWM线电压幅值sqrt(3)/2*Vdc
+        直流母线电压利用率=输出线电压波形幅值/直流母线电压 , SVPWM提高了15.4%
+        SPWM调制，相电压幅值最高为Vdc/2，线电压幅值是sqrt(3)Vdc/2，利用率0.866    
+        SVPWM调制，相电压幅值2/3*Vdc-&gt;合成矢量=Vdc=Ux 
+
+        SVPWM的非零矢量相电压Van=2/3*Vdc,Van/Vbn/Vcn矢量合成Ux=Vdc,  3s-2s等幅值变换Ux=2/3*Vdc.
+        SVPWM内切圆:相电压A=2/3*Vdc*sqrt(3)/2,相电压为正弦, A*sin(x)  正弦相电压*sqrt(3)=Vdc线电压
+        注:!!SVPWM是开关(S1,S2,S3)调制出的非零矢量2/3*Vdc,属于两相系看待问题,矢量长度被缩放1.5倍,m=2/3!!
+
+        (4)alpha和beta坐标系
+        clark等幅值变换:ap分量幅值m*(3/2)Um=三相分量幅值Um(自然坐标系)=&gt; m=2/3 =&gt;变换前后分量幅值相同=&gt;矢量幅值不等,但磁通矢量相等(两相匝数是三相匝数3/2倍)
+        矢量合成电压幅值相等=&gt;等矢幅变换m=1.
+        合成的电压矢量乘以电流矢量相等=&gt;等功率变换m=sqrt(2/3)
+
+        3s-2s相似变换  2s-2s相等变换
+        等幅值变换:目的就是让正交坐标轴容易用点,把I_alpha和Ia对齐上,磁通矢量相等.
+        本质:alpha-beta轴是x-y轴的1.5倍缩小,clark变换是3相转2相,是非正交转正交系.  
+        相似不是相等,分别对应磁通-功率;磁通-幅值;磁通-矢量大小.
+
+        (5)Vx矢量长度Vdc或者2/3*Vdc对占空比影响
+        平均值等效原理:m=2*sqrt(3)/3*|Uref|/|Uo|,Uo为U(1~6)
+        不管U(1~6)等于多大，T4，T6的最大的时间是不会变的(除完之后没有Uref,没有Uo，只有一个固定的数字)，这个时间是pwm波的占空比输出.
+
+        (6)综合
+        如果认为U(1~6)是等于2/3*Vdc，那我们认为Uref最大只能到2/3*Vdc(六边形)，或者2/3*Vdc*sqrt(3)/2(内切圆);
+        如果认为U(1~6)是等于Vdc，那我们认为Uref最大只能到Vdc(六边形)，或者Udc*sqrt(3)/2(内切圆);
+        但是不管U(1~6)等于谁，MCU对pwm操作的高低电平的时间规律是不会变的，这就是重点.
+
+        如果认为是Vdc这是在三相系中看的结果，也是在等矢幅变换后的x-y坐标系中看的结果;
+        如果认为是2Vdc/3,这就是在等幅值变换的alpha-beta坐标系中看的结果;
+        不论哪种结果，改变不了占空比变化的规律.
+
+        平均值等效原理T4、T6与T0、T7得SVPWM通道占空比变化范围:
+        50%(Uref=0,零矢量Ts/2)-&gt;93.34%(Uref=sqrt(3)/2Uo)-&gt;100%(sqrt(3)/2Uo，30°，90°，150°等等)
+
+    9、ADC标幺化
+        (1)FOC环标ㄠ化
+        ((ADC1-&gt;JDR1&lt;&lt;1)&gt;&gt;4)/4096*Vref*2^15=((((ADC1-&gt;JDR1&lt;&lt;1)&gt;&gt;4)&gt;&gt;12)*Vref)&lt;&lt;15, Vref=2为放大偏置
+        注:SVPWM调整ADC注入通道采集相电流,且因为带偏置,原ADC最大4096,调到2048,所以整数位&lt;=1,符合Q15
+        注:ADC-&gt;JDR1已放大2倍了
+
+        Udc 与Valpha、Vbeta关系;Ux=2/3*Udc  Uref=sqrt(3)/2*Ux
+
+        wAux=(int32 t)( pHandle-&gt;wPhaseAoffset)- wAux; // ADC带偏置,最大值/2,Q15范围内,ST建系的beta轴向下
+        if(pHandle-&gt;bIndex&lt;16) &#123;
+            pHandle-&gt;wPhaseAoffset += ADC1-&gt;JDR1;
+            pHandle-&gt;wPhaseBoffset += ADC2-&gt;JDR1;
+            pHandle-&gt;bIndex++;
+        &#125;
+        pHandle-&gt;wPhaseAoffset&gt;&gt;=3;
+
+        ADC带偏置,最大值/2,但最终vref会再把他放大2倍,为了和offset相减出负数. 
+        原应&gt;&gt;4,但JDR1左对齐12位,最高位为符号位,需&lt;&lt;1位,范围满足定点Q15运算,最后再&gt;&gt;4位取平均值
+        
+        hElAngle:015
+
+8.2、电机特性参数(电机功率、气隙磁场、Te、零极点对消)
+    1、过积分饱和:误差长期存在,导致积分值过大.
+    
+    2、PI降功率-&gt;斜坡降功率,可能扭矩突变,车辆顿挫-&gt;积分型PI;降电机功率-&gt;(1)母线和相线电流限制(2)母线电压&lt;低压阀值.
+    相电流的优先级通常高于母线电流(电机损坏风险更直接),故降幅权重更大.   母线-&gt;关联电源 相线-&gt;关联电机绕组.
+    过调制的极限就是方波,方波控制电压利用率高,方波力矩比正弦波大.
+
+    3、电生磁-流经气隙的磁通-磁生电,转子感应电流与气隙磁通相互作用而产生旋转力矩.
+    气隙磁场-&gt;正弦分布(同步电机磁场沿气隙正弦分布);非正弦-&gt;系统转矩脉动增大、梯形波的气隙磁场含有很多谐波分量、铁芯损耗大.
+    如:a相绕组磁动势在气隙空间的时间表达式-驻波 =》合成磁动势=行波,沿着空间角θ向前推移,也就是沿着圆形气隙不停滴旋转(旋转磁场) 
+    注:驻波,为泰勒展开取的基波分量.
+
+    4、电磁转矩可分为两部分:第一部分是由永磁磁通与定子电流的交轴分量相互作用所产生的主电磁转矩，即永磁转矩;
+    第二部分是由于电机凸极效应产生磁阻转矩(当电机交、直轴的磁导相同时，该电机不产生磁阻转矩)。
+    磁场线通过定子到气隙到转子再回气隙再回到定子形成回路完成电机磁场交链.
+
+    Te=(3/2)*P*[ψf*Iq+(Ld-Lq)*Id*Iq]  P=Te*w(功率外环+转矩/电流内环)-&gt;调节风机转速和转矩→维持恒定发电功率。
+    永磁转矩(ψf*Iq):永磁磁场与定子q轴电流磁场相互作用产生.
+    磁阳转矩((Ld-Lq)*Id*Iq):由电机的凸极效应(Ld≠Lq)引起，是定子d轴和q轴电流磁场相互作用的结果，
+    IPMSM中，合理利用Id和Iq(如最大转矩电流比MTPA控制)可以显著增加总输出转矩或提高效率.
+    表贴式永磁同步电机(SPMSM)，Ld≈Lq    内置式IPMSM，电机的凸极效应(Ld≠Lq)，MTPA
+
+    5、二阶系统(零极点对消):截止频率决定了系统响应速度，而相位裕度决定了系统的稳定性;开环增益决定系统的截止频率，s前系数x定了截止频率处相位裕度的大小。
+    自举电路:预充电函数，依次打开下管充电
+    开环强拖:Ns(rpm)=60f(hz)/P
+    电压只和转速有关，电流只和转矩有关.
+</code></pre>
+<p><span id="section9-foc"></span></p>
+<h4 id="九、电机应用-顺逆风、堵转、缺相、开环强拖、电机参数测量、顺逆风检查法与闭环运行、故障及恢复、坡道驻车、推车助力、TCS、EABS"><a href="#九、电机应用-顺逆风、堵转、缺相、开环强拖、电机参数测量、顺逆风检查法与闭环运行、故障及恢复、坡道驻车、推车助力、TCS、EABS" class="headerlink" title="九、电机应用(顺逆风、堵转、缺相、开环强拖、电机参数测量、顺逆风检查法与闭环运行、故障及恢复、坡道驻车、推车助力、TCS、EABS)"></a>九、电机应用(顺逆风、堵转、缺相、开环强拖、电机参数测量、顺逆风检查法与闭环运行、故障及恢复、坡道驻车、推车助力、TCS、EABS)</h4><pre><code>9.1、顺逆风检测
+    电机启动前已旋转,需要平稳启动策略-&gt;ramp策略.  防止启动的转矩突变.
+    顺风-&gt;同步顺风转速再启动;逆风-&gt;制动再正向启动
+    无感估算,HFI法-&gt;We与θe-&gt;顺逆风启动
+
+9.2、堵转:
+    1.电机转速大于设定最大值或者小于设定最小值，则判定为堵转 ;                 
+    2.Iq大于设定值，转速小于设定值则判断堵转。主要思路为电流和转速正相关;      
+    3.三相电流幅值大于堵转电流设定值则判断为堵转。
+
+9.3、缺相:
+    1.三相电流幅值相差3倍，则判定为电机缺相，检测时间是2s，时间可以根据项目实际频率调整
+    2.三相电流的积分值过小，持续1s，判定为缺相
+    
+9.4、开环强拖
+    1.给定电机强拖频率、强拖电流、强拖加速度，使电机从静止开始拖动到设定的强拖频率。           \
+    2.当电机达到设定频率，且估算角度和强拖角度误差在（10.98°~ 98.87°）之内则判断为估算         \
+    已经跟随到强拖角度，连续5次则从开环切换到闭环。                                          \
+    3.由于强拖给定的是Id，所以在程序留了从Id--&gt;Iq电流的切换时间，切换时间的长短依照实际电机负载\
+    来调整。（总的原则，负载轻则切换时间短;负载重则切换时间长，对于灯扇类应用则可以适当延长，\
+    等扇叶完全展开后再切入速度闭环。                                                         \
+    4.开环状态用来测试电机极对数，计算公式：极对数N = 60f/Speed ，其中f为电机电频率，Speed为电机\
+    机械转速。
+
+9.5、磁链/反电动势系数、电阻电感、极对数测量
+    电机磁链常数 计算公式：Vpp/2/sqrt(3)/(2*PI)/f，其中Vpp为电压峰峰值，f为电频率 3.68V 25Hz
+    本质: 磁链其实就是电压对时间的积分，反着来说电机的反电动势为磁链的微分，可以通过测量反电动势得到磁链常数.  bemf--&gt;电枢反应
+
+    测量方法:用电压探头连接电机两相，用力旋转转子，捕捉反电势波形。选用较为均匀的反电动势波形(峰值最大的一个波形)，峰峰值Vpp，频率F，公式磁链=Vpp/2/(2pi)/sqrt(3)/F   
+    用处: 在顺逆风启动的速度检测，角度估算不使用这些参数
+    
+    电阻、电感:测试仪器-LCR或者万用表和LCR。
+    选用Ls-Rs档，电平选用 1V，频率根据电机实际运行的电频率来设置，常用的检测频率为 100Hz。测试之前最好进行开路和短路清零。 
+    如果没有 Ls-Rs档，选用Ls-Q档测试电感，万用表测试电阻。
+    数据处理步骤：用手旋转一圈电机转子：记录L的最大值和对应的电阻值R1，L的最小值和对应的电阻值R2，则Ld=Lmin/2、Lq=Lmax/2、Rs=(R1+R2)/2.
+
+    极对数: 转动转子一周，示波器上有几个反电势波形就是几对极。
+    另一种测试方法是在程序中强拖电机到固定频率F，然后测试机械转速S，极对数计算公式为n=60*F/S
+    将电机两相通电，电压自定义，不能过大，电流500mA，然后转动电机转子，可以感觉出来几次停顿，几次停顿电机极对数即为几对极。
+
+9.6、顺逆风检查法与闭环运行
+    质:顺逆风后动判断，靠的BEMF U/V/W电压，利用反正切或PLL锁相环可以根据BEMF求得 自转方向/omega/theta,根据这些去执行顺逆风启动策略。
+
+    总之，顺风高速则切入闭环运行;低速状态则进入stop状态，当电机完全停止后静止启动;当逆风高速则一直检测（也可以根据实际应用进行刹车）。
+    观察器法:观测器做顺逆风，无需反电动势电路，一般双电阻采样使用（部分电机使用单电阻采样也可以使用改顺逆风检测，具体需要根据实际调试确认是否可以）
+    反电动势法:反电动势做顺逆风，需反电动势电路，一般单电阻采样使用（双电阻可以使用）
+    
+    顺风:若目标转速&lt;顺风自转,不启动。
+    逆风:若逆风自转&gt;2000转，不后动，否则执行刹车，每次刹车时间从2s开始累加，若未刹车成功每次等待3秒后继续刹车，依次循环直到BEMF趋近零，开始开环启动。
+    
+    逆风启动，注意过压保护。
+    顺风有降速；逆风已经是反转了，刹车是点刹、每次点刹-释放BEMF，相当于逆风降速。并不是一次把逆风刹车到0，那样会导致下管开太长时间发热厉害。
+    点刹几次，从2秒延迟每次累加+1S，多次点刹停止后再开环后动，若点刹无法降速(逆风太大)，那就间隔一个安全时间后再执行点刹循环。
+
+9.7、预定位
+    预定位需要电流环，且给定目标转矩、角度，按频率计算变化Id的步进值，如果过流，说明电流变化过快，需要调整步进值，可以采样分段的目标转矩实现
+    参考ENCODER的预定位
+
+9.8、故障及恢复
+    1.过欠压恢复：       母线电压在正常工作范围内，持续2s则清除过欠压故障标志位;      \
+    2.软件&amp;硬件过流恢复：2s后清除过流故障标志位;                                    \
+    3.堵转恢复：         2s后清除堵转故障标志位;                                    \
+    4.缺相恢复：         2s后清除过流故障标志位;                                 \
+    5.过温恢复：         NTC在正常工作范围内，持续2s则清除过温故障标志位;           \
+    6.启动恢复：         1s后重启
+ 
+    硬件过流HardCurretError
+    MCPWM_FALL事件，CMP中断关闭PWM输出
+    反转速过高，降速，再刹车，否则容易过流保护
+
+    卷积:时域信号在某个点的级数展开求和
+    MPTA:本质还是Id Iq在条件极值下，对Is的角度beta，即Te对beta的求导，求出最佳的beta(即最佳的Id Iq)
+
+    观测器:(1)量测去反馈和修正观测器的状态变量 (2)使用估计的状态变量去计算电角度
+    
+    控制模式:恒转速、恒转矩、恒电压、恒风量
+
+9.9、坡道驻车
+    位置环与扭矩控制、IMU
+
+9.10、推车助力
+    速度环、速度相位裕度、双向油门转把(电机顺逆风)
+
+9.11、TCS
+    TCS实现:加速度突变量+阈值判断路面类型、调整扭矩-&gt;加速度-&gt;降速防打滑
+    误触发:加速度突变量+当前速度V2&gt;目标速度V1-&gt;速降为V1,防止误触发TCS,并减少加速度
+
+9.12、EABS
+    转把信号-PID量化制动力矩-能量回收、负Iq
+</code></pre>
+
+      </div>
+      
+      
+      
+    </div>
+    
+
+    
+    
+    
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%9B%B4%E6%B5%81%E6%97%A0%E5%88%B7%E7%94%B5%E6%9C%BA%E3%80%81%E7%8E%B0%E4%BB%A3%E6%B0%B8%E7%A3%81%E5%90%8C%E6%AD%A5%E7%94%B5%E6%9C%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0"><span class="nav-number">1.</span> <span class="nav-text">一、直流无刷电机、现代永磁同步电机学习笔记</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%8C%E3%80%81ST-FOC-V2-0%E5%BA%93"><span class="nav-number">2.</span> <span class="nav-text">二、ST FOC V2.0库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%89%E3%80%81FOC-%E5%BB%BA%E7%B3%BBdq%E3%80%81SVPWM%E3%80%81%E5%8D%95%E7%94%B5%E9%98%BB%E9%87%87%E6%A0%B7%E3%80%81%E8%BD%AC%E9%80%9F"><span class="nav-number">3.</span> <span class="nav-text">三、FOC-&gt;建系dq、SVPWM、单电阻采样、转速</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%97%A0%E6%84%9F%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-kalaman%E3%80%81%E6%BB%91%E8%86%9CSMO%E3%80%81%E6%A8%A1%E5%9E%8B%E5%8F%82%E8%80%83%E8%87%AA%E9%80%82%E5%BA%94MRAS%E3%80%81%E5%88%9D%E5%A7%8B%E4%BD%8D%E7%BD%AE%E8%BE%A8%E8%AF%86-6%E8%84%89%E5%86%B2%E6%B3%A8%E5%85%A5%E3%80%81HFI-%E3%80%81HALL"><span class="nav-number">4.</span> <span class="nav-text">四、无感控制算法(kalaman、滑膜SMO、模型参考自适应MRAS、初始位置辨识(6脉冲注入、HFI)、HALL)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%94%B5%E6%9C%BA%E7%AE%97%E6%B3%95%E7%BB%BC%E8%BF%B0-SVPWM%E3%80%81%E5%BC%B1%E7%A3%81%E6%89%A9%E9%80%9F%E3%80%81%E8%A7%82%E6%B5%8B%E5%99%A8%E3%80%81%E6%97%A0%E6%84%9F%E5%90%AF%E5%8A%A8%E7%AE%97%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">五、电机算法综述(SVPWM、弱磁扩速、观测器、无感启动算法)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%AD%E3%80%81FOC%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0-%E6%A0%87%E5%B9%BA%E5%8C%96FOC%E7%9B%B8%E5%85%B3%E5%8F%82%E6%95%B0%E3%80%81FOC%E6%9C%AC%E8%B4%A8%E3%80%81ST-SVPWM%E4%B8%8Edpp%E8%A1%A5%E5%81%BF%E3%80%81%E5%B8%A6%E5%AE%BD%E6%A6%82%E8%BF%B0"><span class="nav-number">6.</span> <span class="nav-text">六、FOC算法实现(标幺化FOC相关参数、FOC本质、ST_SVPWM与dpp补偿、带宽概述)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E6%B7%B1%E5%85%A5%E6%97%A0%E6%84%9F-%E6%B0%B8%E7%A3%81%E5%90%8C%E6%AD%A5%E7%94%B5%E6%9C%BA%E4%B9%A6%E7%B1%8D%E6%80%BB%E7%BB%93-%E6%9D%8E%E9%9B%85%E6%99%AE%E8%AF%BA%E5%A4%AB%E7%A8%B3%E5%AE%9A%E6%80%A7%E3%80%81HFI%E3%80%81SMO%E3%80%81%E9%BE%99%E4%BC%AF%E6%A0%BC%E8%A7%82%E6%B5%8B%E5%99%A8%E3%80%81DTC%E3%80%81MRAS%E3%80%81EKF%E3%80%81%E7%BA%BF%E6%80%A7%E4%BA%8C%E6%AC%A1%E5%9E%8B%E8%B0%83%E8%8A%82%E5%99%A8LQR%E3%80%81%E9%9D%9E%E7%BA%BF%E6%80%A7%E7%A3%81%E9%93%BE%E8%A7%82%E6%B5%8B%E5%99%A8"><span class="nav-number">7.</span> <span class="nav-text">七、深入无感(永磁同步电机书籍总结)(李雅普诺夫稳定性、HFI、SMO、龙伯格观测器、DTC、MRAS、EKF、线性二次型调节器LQR、非线性磁链观测器)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E7%94%B5%E6%9C%BA%E5%9F%BA%E7%A1%80%E8%A1%A5%E5%85%85-FOC%E6%8E%A7%E5%88%B6%E5%8F%82%E6%95%B0-%E5%8A%9B%E7%9F%A9%E3%80%81%E7%A3%81%E9%93%BE%E3%80%81SVPWM%E5%B9%85%E5%80%BC%E5%85%B3%E7%B3%BB-%E5%8F%82%E8%80%83%E7%B3%BB-%E3%80%81ADC%E6%A0%87%E5%B9%BA%E5%8C%96%E3%80%81%E7%94%B5%E6%9C%BA%E7%89%B9%E6%80%A7%E5%8F%82%E6%95%B0-%E7%94%B5%E6%9C%BA%E5%8A%9F%E7%8E%87%E3%80%81%E6%B0%94%E9%9A%99%E7%A3%81%E5%9C%BA%E3%80%81Te%E3%80%81%E9%9B%B6%E6%9E%81%E7%82%B9%E5%AF%B9%E6%B6%88"><span class="nav-number">8.</span> <span class="nav-text">八、电机基础补充(FOC控制参数-力矩、磁链、SVPWM幅值关系(参考系)、ADC标幺化、电机特性参数-电机功率、气隙磁场、Te、零极点对消)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E7%94%B5%E6%9C%BA%E5%BA%94%E7%94%A8-%E9%A1%BA%E9%80%86%E9%A3%8E%E3%80%81%E5%A0%B5%E8%BD%AC%E3%80%81%E7%BC%BA%E7%9B%B8%E3%80%81%E5%BC%80%E7%8E%AF%E5%BC%BA%E6%8B%96%E3%80%81%E7%94%B5%E6%9C%BA%E5%8F%82%E6%95%B0%E6%B5%8B%E9%87%8F%E3%80%81%E9%A1%BA%E9%80%86%E9%A3%8E%E6%A3%80%E6%9F%A5%E6%B3%95%E4%B8%8E%E9%97%AD%E7%8E%AF%E8%BF%90%E8%A1%8C%E3%80%81%E6%95%85%E9%9A%9C%E5%8F%8A%E6%81%A2%E5%A4%8D%E3%80%81%E5%9D%A1%E9%81%93%E9%A9%BB%E8%BD%A6%E3%80%81%E6%8E%A8%E8%BD%A6%E5%8A%A9%E5%8A%9B%E3%80%81TCS%E3%80%81EABS"><span class="nav-number">9.</span> <span class="nav-text">九、电机应用(顺逆风、堵转、缺相、开环强拖、电机参数测量、顺逆风检查法与闭环运行、故障及恢复、坡道驻车、推车助力、TCS、EABS)</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="By Spotted Owl"
+      src="/images/fyp.jpg">
+  <p class="site-author-name" itemprop="name">By Spotted Owl</p>
+  <div class="site-description" itemprop="description">少年自有凌云志，不负黄河万古流.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2025-10 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">By Spotted Owl</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
