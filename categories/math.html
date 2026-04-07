@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="积分(一)微分方程(二)多元函数微分(三)概率论与数理统计(四)复数与频率域信号(五)线性代数及其应用(六)  积分(一)关键点：1、极限 2、导数 3、(不)定积分  注：此部分相对基础，推荐读者快速阅读.   微分方程(二)关键点：微分方程解、特征值与特征方程、幂函数、零点与极点、解的收敛于发散.  1、齐次、n阶方程         2、高阶线性-&gt;常系数齐次&#x2F;非齐次方程">
+<meta property="og:type" content="website">
+<meta property="og:title" content="斑点鹰不想熬夜">
+<meta property="og:url" content="http://example.com/categories/math.html">
+<meta property="og:site_name" content="斑点鹰不想熬夜">
+<meta property="og:description" content="积分(一)微分方程(二)多元函数微分(三)概率论与数理统计(四)复数与频率域信号(五)线性代数及其应用(六)  积分(一)关键点：1、极限 2、导数 3、(不)定积分  注：此部分相对基础，推荐读者快速阅读.   微分方程(二)关键点：微分方程解、特征值与特征方程、幂函数、零点与极点、解的收敛于发散.  1、齐次、n阶方程         2、高阶线性-&gt;常系数齐次&#x2F;非齐次方程">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/image/math1/1%E3%80%81%E9%BD%90%E6%AC%A1%E6%96%B9%E7%A8%8B.png">
+<meta property="og:image" content="http://example.com/image/math1/1%E3%80%81%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B.png">
+<meta property="og:image" content="http://example.com/image/math1/2%E3%80%81%E4%BA%8C%E9%98%B6%E7%BA%BF%E6%80%A7%E9%BD%90%E6%AC%A1%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E4%B8%8E%E7%89%B9%E5%BE%81%E6%96%B9%E7%A8%8B.png">
+<meta property="og:image" content="http://example.com/image/math1/2%E3%80%81%E4%BA%8C%E9%98%B6%E7%BA%BF%E6%80%A7%E9%BD%90%E6%AC%A1%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E4%B8%8E%E7%89%B9%E5%BE%81%E6%96%B9%E7%A8%8B2.png">
+<meta property="og:image" content="http://example.com/image/math1/2%E3%80%81%E9%AB%98%E9%98%B6%E7%BA%BF%E6%80%A7%E9%BD%90%E6%AC%A1%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E4%B8%8E%E7%89%B9%E5%BE%81%E6%96%B9%E7%A8%8B.png">
+<meta property="og:image" content="http://example.com/image/math1/3%E3%80%81%E4%BA%8C%E9%98%B6%E7%BA%BF%E6%80%A7%E9%9D%9E%E9%BD%90%E6%AC%A1%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E4%B8%8E%E7%89%B9%E5%BE%81%E6%96%B9%E7%A8%8B.png">
+<meta property="og:image" content="http://example.com/image/math1/3%E3%80%81%E4%BA%8C%E9%98%B6%E7%BA%BF%E6%80%A7%E9%9D%9E%E9%BD%90%E6%AC%A1%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E4%B8%8E%E7%89%B9%E8%A7%A3.png">
+<meta property="og:image" content="http://example.com/image/math1/3%E3%80%81%E4%BA%8C%E9%98%B6%E7%BA%BF%E6%80%A7%E9%9D%9E%E9%BD%90%E6%AC%A1%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E4%B8%8E%E7%89%B9%E8%A7%A32.png">
+<meta property="og:image" content="http://example.com/image/math1/3%E3%80%81%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E4%B8%8E%E6%AC%A7%E6%8B%89%E6%96%B9%E7%A8%8B%E8%A7%A3.png">
+<meta property="og:image" content="http://example.com/image/math2/1%E3%80%81%E6%9E%81%E5%80%BC%E6%9D%A1%E4%BB%B6%E5%88%A4%E5%AE%9A.png">
+<meta property="og:image" content="http://example.com/image/math2/1%E3%80%81%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%9E%81%E5%80%BC.png">
+<meta property="og:image" content="http://example.com/image/math2/2%E3%80%81%E6%96%B9%E5%90%91%E5%AF%BC%E6%95%B0.png">
+<meta property="og:image" content="http://example.com/image/math2/2%E3%80%81%E6%96%B9%E5%90%91%E5%AF%BC%E6%95%B02.png">
+<meta property="og:image" content="http://example.com/image/math2/3%E3%80%81%E5%81%8F%E5%AF%BC%E6%95%B0%E4%B8%8E%E6%9E%81%E9%99%90.png">
+<meta property="og:image" content="http://example.com/image/math2/3%E3%80%81%E5%85%A8%E5%BE%AE%E5%88%86_%E9%9A%90%E5%87%BD%E6%95%B0_%E5%8F%82%E6%95%B0%E6%96%B9%E7%A8%8B.png">
+<meta property="og:image" content="http://example.com/image/math2/4%E3%80%81%E5%85%A8%E5%BE%AE%E5%88%86_%E9%9A%90%E5%87%BD%E6%95%B0_%E5%8F%82%E6%95%B0%E6%96%B9%E7%A8%8B_%E6%B3%95%E5%90%91%E9%87%8F%E4%B8%8E%E5%88%87%E5%90%91%E9%87%8F.png">
+<meta property="og:image" content="http://example.com/image/math2/4%E3%80%81%E5%85%A8%E5%BE%AE%E5%88%86%E4%B8%8E%E6%9E%81%E9%99%90.png">
+<meta property="og:image" content="http://example.com/image/math2/5%E3%80%81%E6%A2%AF%E5%BA%A6%E4%B8%8E%E6%96%B9%E5%90%91%E4%BD%99%E5%BC%A6.png">
+<meta property="og:image" content="http://example.com/image/math2/5%E3%80%81%E6%A2%AF%E5%BA%A6%E4%B8%8E%E5%85%A8%E5%BE%AE%E5%88%86.png">
+<meta property="og:image" content="http://example.com/image/math2/6%E3%80%81%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95%E4%B8%8E%E6%9E%81%E5%80%BC.png">
+<meta property="og:image" content="http://example.com/image/math2/6%E3%80%81%E9%9A%90%E5%87%BD%E6%95%B0%E4%B8%8E%E9%9B%85%E5%8F%AF%E6%AF%94%E7%9F%A9%E9%98%B5.png">
+<meta property="og:image" content="http://example.com/image/math2/7%E3%80%81%E6%B3%B0%E5%8B%92%E7%BA%A7%E6%95%B0.png">
+<meta property="og:image" content="http://example.com/image/math2/7%E3%80%81%E6%B3%B0%E5%8B%92%E7%BA%A7%E6%95%B0%E4%B8%8E%E6%AD%A3%E5%BC%A6%E5%91%A8%E6%9C%9F%E4%BF%A1%E5%8F%B7.png">
+<meta property="og:image" content="http://example.com/image/math2/7%E3%80%81%E7%BA%A7%E6%95%B0%E6%94%B6%E6%95%9B%E4%B8%8E%E5%8F%91%E6%95%A3.png">
+<meta property="og:image" content="http://example.com/image/math2/7%E3%80%81%E7%BA%A7%E6%95%B0%E6%94%B6%E6%95%9B%E4%B8%8E%E5%8F%91%E6%95%A32.png">
+<meta property="og:image" content="http://example.com/image/math2/8%E3%80%81%E5%82%85%E9%87%8C%E5%8F%B6%E7%BA%A7%E6%95%B0.png">
+<meta property="og:image" content="http://example.com/image/math2/8%E3%80%81%E5%82%85%E9%87%8C%E5%8F%B6%E7%BA%A7%E6%95%B0%E4%B8%8E%E4%BB%BB%E6%84%8F%E5%91%A8%E6%9C%9F2l.png">
+<meta property="og:image" content="http://example.com/image/math2/9%E3%80%81%E5%82%85%E9%87%8C%E5%8F%B6%E7%BA%A7%E6%95%B0%E4%B8%8E%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0.png">
+<meta property="og:image" content="http://example.com/image/math2/9%E3%80%81%E5%82%85%E9%87%8C%E5%8F%B6%E7%BA%A7%E6%95%B0%E4%B8%8E%E4%BF%A1%E5%8F%B7%E7%A4%BA%E4%BE%8B.png">
+<meta property="og:image" content="http://example.com/image/probability/1%E3%80%81%E6%96%B9%E5%B7%AE%E4%B8%8E%E5%81%8F%E7%A6%BB%E7%A8%8B%E5%BA%A6.png">
+<meta property="og:image" content="http://example.com/image/probability/1%E3%80%81%E5%9D%87%E6%96%B9%E5%87%BD%E6%95%B0%E4%B8%8E%E6%96%B9%E5%B7%AE%E5%87%BD%E6%95%B0.png">
+<meta property="og:image" content="http://example.com/image/probability/2%E3%80%81%E5%B9%B3%E7%A8%B3%E8%BF%87%E7%A8%8B%E7%9A%84%E5%8A%9F%E7%8E%87%E8%B0%B1%E5%AF%86%E5%BA%A6.png">
+<meta property="og:image" content="http://example.com/image/probability/2%E3%80%81%E8%B0%B1%E5%AF%86%E5%BA%A6_%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83.png">
+<meta property="og:image" content="http://example.com/image/probability/3%E3%80%81%E5%88%87%E6%AF%94%E9%9B%AA%E5%A4%AB%E4%B8%8D%E7%AD%89%E5%BC%8F.png">
+<meta property="og:image" content="http://example.com/image/probability/3%E3%80%81%E6%95%B0%E5%AD%A6%E6%9C%9F%E6%9C%9B%E4%B8%8E%E5%88%86%E6%95%B0.png">
+<meta property="og:image" content="http://example.com/image/probability/4%E3%80%81%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5.png">
+<meta property="og:image" content="http://example.com/image/probability/4%E3%80%81%E5%8D%8F%E6%96%B9%E5%B7%AE%E4%B8%8E%E7%9B%B8%E5%85%B3%E6%80%A7.png">
+<meta property="og:image" content="http://example.com/image/probability/5%E3%80%81%E7%BB%9F%E8%AE%A1%E9%87%8F_%E6%A3%80%E9%AA%8C%E9%97%AE%E9%A2%98%E7%9A%84%E7%BD%AE%E4%BF%A1%E5%8C%BA%E9%97%B4.png">
+<meta property="og:image" content="http://example.com/image/probability/5%E3%80%81%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B.png">
+<meta property="og:image" content="http://example.com/image/probability/6%E3%80%81%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B_%E6%96%B9%E5%B7%AE%E4%BC%B0%E8%AE%A1.png">
+<meta property="og:image" content="http://example.com/image/probability/6%E3%80%81%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8E%E5%9D%87%E6%96%B9%E8%AF%AF%E5%B7%AE.png">
+<meta property="og:image" content="http://example.com/image/probability/6%E3%80%81%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B_%E6%9C%80%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1.png">
+<meta property="og:image" content="http://example.com/image/probability/6%E3%80%81%E6%9C%80%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1.png">
+<meta property="og:image" content="http://example.com/image/probability/7%E3%80%81%E9%A2%91%E5%9F%9F%E4%B8%8E%E7%9B%B8%E4%BD%8D%E8%A7%86%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/image/probability/7%E3%80%81%E9%A2%91%E7%8E%87%E7%9A%84%E8%83%BD%E9%87%8F%E8%A7%86%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/image/probability/7%E3%80%81%E7%9B%B8%E4%BD%8D%E8%B0%B1%E8%A7%86%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/image/probability/7%E3%80%81%E5%A4%8D%E6%95%B0%E5%9F%9F3%E7%BB%B4%E8%A7%86%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/image/probability/7%E3%80%81%E7%9B%B8%E4%BD%8D%E8%B0%B1%E5%AE%9A%E4%B9%89.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/1%E3%80%81Ax=b%E7%BA%BF%E6%80%A7%E7%BB%84%E5%90%88.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/1%E3%80%81T%E5%8F%98%E6%8D%A2%E6%8F%8F%E8%BF%B0Ax=b.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/1%E3%80%81Ax=b%E5%AD%98%E5%9C%A8%E6%80%A7%E4%B8%8E%E5%94%AF%E4%B8%80%E6%80%A7.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/2%E3%80%81Ax=0%E9%BD%90%E6%AC%A1%E7%BA%BF%E6%80%A7.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/2%E3%80%81%E7%9B%B8%E5%85%B3%E6%80%A7%E4%B8%8E%E8%87%AA%E7%94%B1%E8%A7%A3.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/2%E3%80%81%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%9F%BA%E5%8F%98%E6%8D%A2.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/3%E3%80%81%E5%88%9D%E7%AD%89%E8%A1%8C%E5%8F%98%E6%8D%A2.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/3%E3%80%81%E5%88%9D%E7%AD%89%E8%A1%8C%E5%8F%98%E6%8D%A22.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/4%E3%80%81%E9%BD%90%E6%AC%A1%E5%9D%90%E6%A0%87%E4%B8%8E%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA%E5%8F%98%E6%8D%A2.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/4%E3%80%81%E9%BD%90%E6%AC%A1%E4%B8%89%E7%BB%B4%E6%97%8B%E8%BD%AC%E7%9A%84%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA_%E5%9B%9B%E5%85%83%E6%95%B0.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/5%E3%80%81LU%E5%88%86%E8%A7%A3.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/5%E3%80%81LU%E5%88%86%E8%A7%A32.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/5%E3%80%81%E9%9B%B6%E7%A9%BA%E9%97%B4%E4%B8%8E%E8%87%AA%E7%94%B1%E5%8F%98%E9%87%8F_%E5%9F%BA.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/6%E3%80%81%E5%85%8B%E6%8B%89%E9%BB%98%E4%B8%8E%E4%BC%B4%E9%9A%8F%E7%9F%A9%E9%98%B5%E6%B1%82%E9%80%86.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/7%E3%80%81%E7%9F%A9%E9%98%B5Ax=0%E7%9A%84%E9%9B%B6%E7%A9%BA%E9%97%B4.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/7%E3%80%81%E5%88%97%E7%A9%BA%E9%97%B4%E4%B8%8E%E9%9B%B6%E7%A9%BA%E9%97%B4_%E7%BA%BF%E6%80%A7%E7%9B%B8%E5%85%B3%E6%80%A7.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/8%E3%80%81%E7%BA%BF%E6%80%A7%E5%8F%98%E6%8D%A2%E6%9C%AF%E8%AF%AD%E4%B8%8E%E5%AD%90%E7%A9%BA%E9%97%B4.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/8%E3%80%81%E6%9D%83%E4%B8%8E%E5%9F%BA%E5%9D%90%E6%A0%87.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/8%E3%80%81%E6%9D%83%E4%B8%8E%E5%9F%BA%E5%9D%90%E6%A0%87_%E5%8F%82%E8%80%83%E7%B3%BB.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/8%E3%80%81%E6%9D%83%E4%B8%8E%E5%9F%BA%E7%B3%BB_%E4%B8%8D%E5%90%8C%E5%8F%82%E8%80%83%E7%B3%BB%E8%A1%A8%E7%A4%BA.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/8%E3%80%81b%E5%9C%A8A%E5%BC%A0%E6%88%90%E5%AD%90%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9D%90%E6%A0%87%E4%B8%BAx.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/8%E3%80%81%E4%B8%8D%E5%90%8C%E5%9D%90%E6%A0%87%E7%B3%BB%E9%97%B4%E7%9A%84%E7%9F%A9%E9%98%B5%E5%8F%98%E6%8D%A2.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/9%E3%80%81%E9%9B%B6%E7%A9%BA%E9%97%B4%E4%B8%8E%E5%88%97%E7%A9%BA%E9%97%B4%E7%BB%B4%E6%95%B0.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/9%E3%80%81%E9%BD%90%E6%AC%A1_%E9%9D%9E%E9%BD%90%E6%AC%A1%E4%B8%8EAx=0_Ax=b%E8%A7%A3%E9%9B%86%E5%85%B3%E7%B3%BB.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/9%E3%80%81Ax=b%E5%A2%9E%E5%B9%BF%E7%9F%A9%E9%98%B5%E4%B8%8E%E9%80%86_%E5%9D%90%E6%A0%87%E5%8F%98%E6%8D%A2.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/9%E3%80%81%E4%BF%A1%E5%8F%B7%E9%97%B4%E7%9A%84%E7%BA%BF%E6%80%A7%E6%97%A0%E5%85%B3.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/10%E3%80%81%E7%89%B9%E5%BE%81%E5%80%BC%E4%B8%8E%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/10%E3%80%81%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F%E4%B8%8E%E5%B7%AE%E5%88%86%E6%96%B9%E7%A8%8B.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/10%E3%80%81%E5%AF%B9%E8%A7%92%E5%8C%96%E7%9F%A9%E9%98%B5.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/10%E3%80%81%E7%9B%B8%E4%BC%BC%E7%9F%A9%E9%98%B5%E4%B8%8E%E7%89%B9%E5%BE%81%E6%80%A7%E8%B4%A8.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/10%E3%80%81%E7%89%B9%E5%BE%81%E6%80%A7%E8%B4%A8%E4%B8%8E%E6%8E%A7%E5%88%B6%E5%B7%AE%E5%88%86%E7%B3%BB%E7%BB%9F.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/11%E3%80%81%E6%98%A0%E5%B0%84%E7%9A%84%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/11%E3%80%81%E6%98%A0%E5%B0%84%E7%9A%84%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA2.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/11%E3%80%81%E5%8F%98%E9%87%8F%E4%BB%A3%E6%8D%A2%E4%B8%8E%E7%B3%BB%E7%BB%9F%E8%A7%A3%E8%80%A6.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/11%E3%80%81%E7%89%B9%E5%BE%81%E5%A4%9A%E9%A1%B9%E5%BC%8F%E4%B8%8E%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E8%A7%A3.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/11%E3%80%81%E7%89%B9%E5%BE%81%E6%96%B9%E7%A8%8B%E4%B8%8E%E5%8F%98%E9%87%8F%E4%BB%A3%E6%8D%A2_%E8%A7%A3%E8%80%A6%E7%B3%BB%E7%BB%9F.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/11%E3%80%81%E5%B9%82%E7%AE%97%E6%B3%95%E4%B8%8E%E4%B8%BB%E7%89%B9%E5%BE%81%E5%80%BC_%E5%B7%AE%E5%88%86%E6%96%B9%E7%A8%8B_%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%B3%BB%E7%BB%9F.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/11%E3%80%81%E9%80%86%E5%B9%82%E6%B3%95%E4%B8%8E%E4%B8%BB%E7%89%B9%E5%BE%81%E5%80%BC_%E6%94%B6%E6%95%9B%E9%80%9F%E5%BA%A6.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/12%E3%80%81%E8%A1%8C%E5%88%97%E7%A9%BA%E9%97%B4%E4%B8%8E%E9%9B%B6%E7%A9%BA%E9%97%B4%E7%9A%84%E6%AD%A3%E4%BA%A4%E8%A1%A5_%E8%A1%8C%E5%88%97%E8%BD%AC%E7%BD%AE.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/12%E3%80%81%E6%AD%A3%E4%BA%A4%E6%8A%95%E5%BD%B1%E4%B8%8E%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/12%E3%80%81%E6%AD%A3%E4%BA%A4%E6%8A%95%E5%BD%B1%E4%B8%8E%E5%A4%9A%E7%BB%B4.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/12%E3%80%81%E6%AD%A3%E4%BA%A4%E6%8A%95%E5%BD%B1%E4%B8%8E%E6%96%BD%E5%AF%86%E7%89%B9%E6%AD%A3%E4%BA%A4%E5%9F%BA.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/12%E3%80%81QR%E5%88%86%E8%A7%A3%E4%B8%8E%E6%96%BD%E5%AF%86%E7%89%B9%E6%AD%A3%E4%BA%A4%E5%9F%BA.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/12%E3%80%81QR%E5%88%86%E8%A7%A3%E4%B8%8E%E6%96%BD%E5%AF%86%E7%89%B9%E6%AD%A3%E4%BA%A4%E5%9F%BA2.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/13%E3%80%81%E4%BC%B0%E8%AE%A1%E5%80%BC%E4%B8%8E%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98_%E8%AF%AF%E5%B7%AE.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/13%E3%80%81%E4%BC%B0%E8%AE%A1%E5%80%BC%E4%B8%8E%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98_%E8%AF%AF%E5%B7%AE_%E6%AD%A3%E4%BA%A4%E6%8A%95%E5%BD%B1.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/13%E3%80%81%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98_%E6%8B%9F%E7%BA%BF.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/13%E3%80%81%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98_%E6%8B%9F%E9%9D%A2.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/13%E3%80%81%E5%86%85%E7%A7%AF%E4%B8%8E%E6%96%BD%E5%AF%86%E7%89%B9.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/13%E3%80%81%E5%86%85%E7%A7%AF%E7%9A%84%E6%9C%80%E4%BD%B3%E9%80%BC%E8%BF%91.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/13%E3%80%81%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98_%E6%8B%9F%E7%BA%BF.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/13%E3%80%81%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98_%E6%8B%9F%E9%9D%A2.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/13%E3%80%81%E5%8A%A0%E6%9D%83%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E9%80%BC%E8%BF%91.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/13%E3%80%81%E5%8A%A0%E6%9D%83%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E9%80%BC%E8%BF%912.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/13%E3%80%81%E5%82%85%E9%87%8C%E5%8F%B6%E7%BA%A7%E6%95%B0%E4%B8%8E%E4%B8%89%E8%A7%92%E5%A4%9A%E9%A1%B9%E5%BC%8F_%E5%AD%90%E7%A9%BA%E9%97%B4%E5%87%BD%E6%95%B0%E9%80%BC%E8%BF%91.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/14%E3%80%81%E5%AE%9E%E5%AF%B9%E7%A7%B0%E9%98%B5%E4%B8%8E%E6%AD%A3%E4%BA%A4%E5%AF%B9%E8%A7%92%E5%8C%96.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/14%E3%80%81%E5%AE%9E%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E5%92%8C%E4%BA%8C%E6%AC%A1%E5%9E%8B_%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F%E4%B8%8E%E7%89%B9%E5%BE%81%E5%80%BC.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/14%E3%80%81%E4%BA%8C%E6%AC%A1%E5%9E%8B%E4%B8%8E%E7%89%B9%E5%BE%81%E5%80%BC_%E7%B3%BB%E7%BB%9F%E6%AD%A3%E8%B4%9F%E5%AE%9A.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/14%E3%80%81%E4%BA%8C%E6%AC%A1%E5%9E%8B%E6%9E%81%E5%80%BC%E4%B8%8E%E7%89%B9%E5%BE%81%E5%80%BC.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/14%E3%80%81%E4%BA%8C%E6%AC%A1%E5%9E%8B%E6%9E%81%E5%80%BC%E4%B8%8E%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5_%E7%89%B9%E5%BE%81%E5%80%BC.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/15%E3%80%81%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E7%9A%84%E5%A5%87%E5%BC%82%E5%80%BC%E4%B8%8E%E7%89%B9%E5%BE%81%E5%80%BC.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/15%E3%80%81%E5%A5%87%E5%BC%82%E5%80%BC%E4%B8%8E%E6%AD%A3%E4%BA%A4%E5%9F%BA_%E5%90%84%E5%9F%BA%E6%9D%83%E5%80%BC.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/15%E3%80%81%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3(SVD)_%E6%AD%A3%E4%BA%A4%E5%9F%BA.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/15%E3%80%81%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3(SVD)_%E6%AD%A3%E4%BA%A4%E5%9F%BAAv.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/15%E3%80%81%E5%A5%87%E5%BC%82%E5%88%86%E8%A7%A3%E4%B8%8E%E4%B8%BB%E8%A6%81%E6%88%90%E5%88%86%E5%88%86%E6%9E%90.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/15%E3%80%81%E5%A5%87%E5%BC%82%E5%88%86%E8%A7%A3%E4%B8%8E%E5%AD%90%E7%A9%BA%E9%97%B4.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/16%E3%80%81%E5%9B%9B%E4%B8%AA%E5%9F%BA%E6%9C%AC%E5%AD%90%E7%A9%BA%E9%97%B4%E4%B8%8E%E5%8F%AF%E9%80%86%E7%9F%A9%E9%98%B5.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/16%E3%80%81%E5%9D%87%E5%80%BC%E4%B8%8E%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/16%E3%80%81%E6%80%BB%E6%96%B9%E5%B7%AE%E4%B8%8E%E5%8D%8F%E6%96%B9%E5%B7%AE.png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/16%E3%80%81%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5_%E8%A7%82%E6%B5%8B%E7%9F%A9%E9%98%B5(%E4%B8%8D%E5%90%8C%E5%8F%82%E8%80%83%E7%B3%BB)_%E4%B8%BB%E8%A6%81%E6%88%90%E5%88%86(%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83).png">
+<meta property="og:image" content="http://example.com/image/linear_algebra/17%E3%80%81%E4%BB%BF%E5%B0%84%E5%8F%98%E6%8D%A2.png">
+<meta property="article:published_time" content="2026-04-06T09:16:17.761Z">
+<meta property="article:modified_time" content="2026-04-06T09:16:17.761Z">
+<meta property="article:author" content="By Spotted Owl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/image/math1/1%E3%80%81%E9%BD%90%E6%AC%A1%E6%96%B9%E7%A8%8B.png">
+
+<link rel="canonical" href="http://example.com/categories/math">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 斑点鹰不想熬夜
+</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">斑点鹰不想熬夜</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+  
+  
+
+          <div class="content page posts-expand">
+            
+
+    
+    
+    
+    <div class="post-block" lang="zh-CN">
+      <header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">
+</h1>
+
+<div class="post-meta">
+  
+
+</div>
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+          <!-- --------------------------------- 数学 ---------------------------------- -->
+<p><a href="#section1-integral">积分(一)</a><br><a href="#section1-differential-equation">微分方程(二)</a><br><a href="#section2-differential-equation-dual">多元函数微分(三)</a><br><a href="#section3-Probability-Theory">概率论与数理统计(四)</a><br><a href="#section4-Plurality-and-Frequency-Domain">复数与频率域信号(五)</a><br><a href="#section5-Linear-Algebra-and-Its-Applications">线性代数及其应用(六)</a></p>
+<p><span id="section1-integral"></span></p>
+<h4 id="积分-一"><a href="#积分-一" class="headerlink" title="积分(一)"></a>积分(一)</h4><pre><code>关键点：1、极限 2、导数 3、(不)定积分  注：此部分相对基础，推荐读者快速阅读.
+</code></pre>
+<p><span id="section1-differential-equation"></span></p>
+<h4 id="微分方程-二"><a href="#微分方程-二" class="headerlink" title="微分方程(二)"></a>微分方程(二)</h4><pre><code>关键点：微分方程解、特征值与特征方程、幂函数、零点与极点、解的收敛于发散.
+</code></pre>
+<h5 id="1、齐次、n阶方程"><a href="#1、齐次、n阶方程" class="headerlink" title="1、齐次、n阶方程"></a>1、齐次、n阶方程</h5><div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math1/1、齐次方程.png" alt="1、齐次方程" height="450" width="450">
+  <img src="../image/math1/1、线性方程.png" alt="1、线性方程" height="450" width="450">
+</div>
+
+<h5 id="2、高阶线性-常系数齐次-非齐次方程"><a href="#2、高阶线性-常系数齐次-非齐次方程" class="headerlink" title="2、高阶线性-&gt;常系数齐次&#x2F;非齐次方程"></a>2、高阶线性-&gt;常系数齐次&#x2F;非齐次方程</h5><div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math1/2、二阶线性齐次微分方程与特征方程.png" alt="2、二阶线性齐次微分方程与特征方程" height="450" width="450">
+  <img src="../image/math1/2、二阶线性齐次微分方程与特征方程2.png" alt="2、二阶线性齐次微分方程与特征方程2" height="450" width="450">
+</div>
+
+<img src="../image/math1/2、高阶线性齐次微分方程与特征方程.png" alt="2、高阶线性齐次微分方程与特征方程" height="450" width="450">
+
+<h5 id="3、方程求解-非齐次特解-齐次通解-、解的特征方程"><a href="#3、方程求解-非齐次特解-齐次通解-、解的特征方程" class="headerlink" title="3、方程求解(非齐次特解+齐次通解)、解的特征方程"></a>3、方程求解(非齐次特解+齐次通解)、解的特征方程</h5><div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math1/3、二阶线性非齐次微分方程与特征方程.png" alt="3、二阶线性非齐次微分方程与特征方程" height="450" width="450">
+  <img src="../image/math1/3、二阶线性非齐次微分方程与特解.png" alt="3、二阶线性非齐次微分方程与特解" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math1/3、二阶线性非齐次微分方程与特解2.png" alt="3、二阶线性非齐次微分方程与特解2" height="450" width="450">
+  <img src="../image/math1/3、微分方程与欧拉方程解.png" alt="3、微分方程与欧拉方程解" height="450" width="450">
+</div>
+
+<p><span id="section2-differential-equation-dual"></span></p>
+<h4 id="多元函数微分-三"><a href="#多元函数微分-三" class="headerlink" title="多元函数微分(三)"></a>多元函数微分(三)</h4><pre><code>关键点：条件极值、最小二乘法、梯度下降、多元微分方程、泰勒级数、傅里叶级数、信号.
+</code></pre>
+<h5 id="1、条件极值"><a href="#1、条件极值" class="headerlink" title="1、条件极值"></a>1、条件极值</h5><div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math2/1、极值条件判定.png" alt="1、极值条件判定" height="450" width="450">
+  <img src="../image/math2/1、拉格朗日极值.png" alt="1、拉格朗日极值" height="450" width="450">
+</div>
+
+<h5 id="2、微分方程与导数"><a href="#2、微分方程与导数" class="headerlink" title="2、微分方程与导数"></a>2、微分方程与导数</h5><pre><code>2.1 方向导数
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math2/2、方向导数.png" alt="2、方向导数" height="450" width="450">
+  <img src="../image/math2/2、方向导数2.png" alt="2、方向导数2" height="450" width="450">
+</div>
+
+<pre><code>2.2 偏导数与全微分
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math2/3、偏导数与极限.png" alt="3、偏导数与极限" height="450" width="450">
+  <img src="../image/math2/3、全微分_隐函数_参数方程.png" alt="3、全微分_隐函数_参数方程" height="450" width="450">
+</div>
+
+<pre><code>2.3 全微分与隐函数、参数方程、切向量
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math2/4、全微分_隐函数_参数方程_法向量与切向量.png" alt="4、全微分_隐函数_参数方程_法向量与切向量" height="450" width="450">
+  <img src="../image/math2/4、全微分与极限.png" alt="4、全微分与极限" height="450" width="450">
+</div>
+
+<pre><code>2.4 梯度下降、法向量与正交基、最小二乘
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math2/5、梯度与方向余弦.png" alt="5、梯度与方向余弦" height="450" width="450">
+  <img src="../image/math2/5、梯度与全微分.png" alt="5、梯度与全微分" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math2/6、最小二乘法与极值.png" alt="6、最小二乘法与极值" height="450" width="450">
+    <img src="../image/math2/6、隐函数与雅可比矩阵.png" alt="6、隐函数与雅可比矩阵" height="450" width="450">
+</div>
+
+<h5 id="3、级数"><a href="#3、级数" class="headerlink" title="3、级数"></a>3、级数</h5><pre><code>泰勒级数
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math2/7、泰勒级数.png" alt="7、泰勒级数" height="450" width="450">
+    <img src="../image/math2/7、泰勒级数与正弦周期信号.png" alt="7、泰勒级数与正弦周期信号" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math2/7、级数收敛与发散.png" alt="7、级数收敛与发散" height="450" width="450">
+    <img src="../image/math2/7、级数收敛与发散2.png" alt="7、级数收敛与发散2" height="450" width="450">
+</div>    
+
+<pre><code>傅里叶级数
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math2/8、傅里叶级数.png" alt="8、傅里叶级数" height="450" width="450">
+    <img src="../image/math2/8、傅里叶级数与任意周期2l.png" alt="8、傅里叶级数与任意周期2l" height="450" width="450">
+</div>        
+
+<pre><code>傅里叶与信号
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/math2/9、傅里叶级数与三角函数.png" alt="9、傅里叶级数与三角函数" height="450" width="450">
+    <img src="../image/math2/9、傅里叶级数与信号示例.png" alt="9、傅里叶级数与信号示例" height="450" width="450">
+</div>     
+
+<p><span id="section3-Probability-Theory"></span></p>
+<h4 id="概率论与数理统计"><a href="#概率论与数理统计" class="headerlink" title="概率论与数理统计"></a>概率论与数理统计</h4><pre><code>关键点:数学期望、方差、协方差、相关性、线性回归.
+</code></pre>
+<h5 id="1、数学期望与方差"><a href="#1、数学期望与方差" class="headerlink" title="1、数学期望与方差"></a>1、数学期望与方差</h5><pre><code>均值与方差
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/probability/1、方差与偏离程度.png" alt="1、方差与偏离程度" height="450" width="450">
+    <img src="../image/probability/1、均方函数与方差函数.png" alt="1、均方函数与方差函数" height="450" width="450">
+</div>  
+
+<pre><code>能量与傅里叶变换的谱密度
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/probability/2、平稳过程的功率谱密度.png" alt="2、平稳过程的功率谱密度" height="450" width="450">
+    <img src="../image/probability/2、谱密度_正态分布.png" alt="2、谱密度_正态分布" height="450" width="450">
+</div>    
+
+<pre><code>切比雪夫与数学期望
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/probability/3、切比雪夫不等式.png" alt="3、切比雪夫不等式" height="450" width="450">
+    <img src="../image/probability/3、数学期望与分数.png" alt="3、数学期望与分数" height="450" width="450">
+</div>    
+
+<h5 id="2、协方差与相关矩阵"><a href="#2、协方差与相关矩阵" class="headerlink" title="2、协方差与相关矩阵"></a>2、协方差与相关矩阵</h5><div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/probability/4、协方差矩阵.png" alt="4、协方差矩阵" height="450" width="450">
+    <img src="../image/probability/4、协方差与相关性.png" alt="4、协方差与相关性" height="450" width="450">
+</div> 
+
+<h5 id="3、线性回归"><a href="#3、线性回归" class="headerlink" title="3、线性回归"></a>3、线性回归</h5><pre><code>置信度与线性回归模型
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/probability/5、统计量_检验问题的置信区间.png" alt="5、统计量_检验问题的置信区间" height="450" width="450">
+<img src="../image/probability/5、线性回归模型.png" alt="5、线性回归模型" height="450" width="450">
+</div>     
+
+<pre><code>模型方差估计
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/probability/6、线性回归模型_方差估计.png" alt="6、线性回归模型_方差估计" height="450" width="450">
+<img src="../image/probability/6、线性回归与均方误差.png" alt="6、线性回归与均方误差" height="450" width="450">
+</div>        
+
+<pre><code>最大似然估计
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/probability/6、线性回归模型_最大似然估计.png" alt="6、线性回归模型_最大似然估计" height="450" width="450">
+<img src="../image/probability/6、最大似然估计.png" alt="6、最大似然估计" height="450" width="450">
+</div>
+
+<p><span id="section4-Plurality-and-Frequency-Domain"></span></p>
+<h4 id="复数与频率域信号"><a href="#复数与频率域信号" class="headerlink" title="复数与频率域信号"></a>复数与频率域信号</h4><pre><code>关键点:频率、相位、幅值.
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/probability/7、频域与相位视图.png" alt="7、频域与相位视图" height="450" width="450">
+  <img src="../image/probability/7、频率的能量视图.png" alt="7、频率的能量视图" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/probability/7、相位谱视图.png" alt="7、相位谱视图" height="450" width="450">
+  <img src="../image/probability/7、复数域3维视图.png" alt="7、复数域3维视图" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/probability/7、相位谱定义.png" alt="7、相位谱定义" height="450" width="450">
+</div>
+
+<p><span id="section5-Linear-Algebra-and-Its-Applications"></span></p>
+<h4 id="线性代数及其应用"><a href="#线性代数及其应用" class="headerlink" title="线性代数及其应用"></a>线性代数及其应用</h4><pre><code>关键点:矩阵变换、线性组合、Ax=b、线性相关/不相关.
+</code></pre>
+<h5 id="1、矩阵变换与线性方程组"><a href="#1、矩阵变换与线性方程组" class="headerlink" title="1、矩阵变换与线性方程组"></a>1、矩阵变换与线性方程组</h5><pre><code>线性组合与矩阵变换(空间)
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/1、Ax=b线性组合.png" alt="1、Ax=b线性组合" height="450" width="450">
+  <img src="../image/linear_algebra/1、T变换描述Ax=b.png" alt="1、T变换描述Ax=b" height="450" width="450">
+</div>
+
+<pre><code>线性组合的存在与唯一性(T对矩阵变换的描述)
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/1、Ax=b存在性与唯一性.png" alt="1、Ax=b存在性与唯一性" height="450" width="450">
+</div>
+
+<pre><code>Ax=0与非凡解(非0解/自由变量)、线性相关性与自由解、机器学基变换
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/2、Ax=0齐次线性.png" alt="2、Ax=0齐次线性" height="450" width="450">
+  <img src="../image/linear_algebra/2、相关性与自由解.png" alt="2、相关性与自由解" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/2、机器人基变换.png" alt="Ax=2、机器人基变换" height="450" width="450">
+</div>
+
+<h5 id="2、矩阵代数"><a href="#2、矩阵代数" class="headerlink" title="2、矩阵代数"></a>2、矩阵代数</h5><pre><code>关键点:矩阵与变换、零空间、自由变量、基、初等矩阵.
+
+初等矩阵
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/3、初等行变换.png" alt="3、初等行变换" height="450" width="450">
+  <img src="../image/linear_algebra/3、初等行变换2.png" alt="3、初等行变换2" height="450" width="450">
+</div>
+
+<pre><code>齐次坐标与矩阵表变换(四元数)
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/4、齐次坐标与矩阵表示变换.png" alt="4、齐次坐标与矩阵表示变换" height="450" width="450">
+  <img src="../image/linear_algebra/4、齐次三维旋转的矩阵表示_四元数.png" alt="4、齐次三维旋转的矩阵表示_四元数" height="450" width="450">
+</div>
+
+<pre><code>LU分解、列空间+零空间与自由变量(初等变换的运用)
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/5、LU分解.png" alt="5、LU分解" height="450" width="450">
+  <img src="../image/linear_algebra/5、LU分解2.png" alt="5、LU分解2" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/5、零空间与自由变量_基.png" alt="5、零空间与自由变量_基" height="450" width="450">
+</div>
+
+<h5 id="3、行列式与逆矩阵"><a href="#3、行列式与逆矩阵" class="headerlink" title="3、行列式与逆矩阵"></a>3、行列式与逆矩阵</h5><pre><code>关键点:几何意义、可逆性、面积、体积
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/6、克拉默与伴随矩阵求逆.png" alt="6、克拉默与伴随矩阵求逆" height="450" width="450">
+</div>
+
+<h5 id="4、向量空间与矩阵空间"><a href="#4、向量空间与矩阵空间" class="headerlink" title="4、向量空间与矩阵空间"></a>4、向量空间与矩阵空间</h5><pre><code>关键点:矩阵张成空间、子空间、基坐标.
+
+列空间与零空间
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/7、矩阵Ax=0的零空间.png" alt="7、矩阵Ax=0的零空间" height="450" width="450">
+  <img src="../image/linear_algebra/7、列空间与零空间_线性相关性.png" alt="7、列空间与零空间_线性相关性" height="450" width="450">
+</div>
+
+<pre><code>坐标与张成空间
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/8、线性变换术语与子空间.png" alt="8、线性变换术语与子空间" height="450" width="450">
+  <img src="../image/linear_algebra/8、权与基坐标.png" alt="8、权与基坐标" height="450" width="450">
+</div>
+
+<pre><code>矩阵张成空间1
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/8、权与基坐标_参考系.png" alt="8、权与基坐标_参考系" height="450" width="450">
+  <img src="../image/linear_algebra/8、权与基系_不同参考系表示.png" alt="8、权与基系_不同参考系表示" height="450" width="450">
+</div>
+
+<pre><code>矩阵张成空间2
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/8、b在A张成子空间的坐标为x.png" alt="8、b在A张成子空间的坐标为x" height="450" width="450">
+  <img src="../image/linear_algebra/8、不同坐标系间的矩阵变换.png" alt="8、不同坐标系间的矩阵变换" height="450" width="450">
+</div>
+
+<pre><code>空间维数与Ax=0、Ax=b的解
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/9、零空间与列空间维数.png" alt="9、零空间与列空间维数" height="450" width="450">
+  <img src="../image/linear_algebra/9、齐次_非齐次与Ax=0_Ax=b解集关系.png" alt="9、齐次_非齐次与Ax=0_Ax=b解集关系" height="450" width="450">
+</div>
+
+<pre><code>信号线性无关
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/9、Ax=b增广矩阵与逆_坐标变换.png" alt="9、Ax=b增广矩阵与逆_坐标变换" height="450" width="450">
+  <img src="../image/linear_algebra/9、信号间的线性无关.png" alt="9、信号间的线性无关" height="450" width="450">
+</div>
+
+<h5 id="5、特征值与特征向量"><a href="#5、特征值与特征向量" class="headerlink" title="5、特征值与特征向量"></a>5、特征值与特征向量</h5><pre><code>关键点:特征值、特征向量、差分方程、收敛于发散、特征多项式、解耦系统、微分方程.
+
+特征值与特征向量性质
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/10、特征值与特征向量.png" alt="10、特征值与特征向量" height="450" width="450">
+  <img src="../image/linear_algebra/10、特征向量与差分方程.png" alt="10、特征向量与差分方程" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/10、对角化矩阵.png" alt="10、对角化矩阵" height="450" width="450">
+  <img src="../image/linear_algebra/10、相似矩阵与特征性质.png" alt="10、相似矩阵与特征性质" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/10、特征性质与控制差分系统.png" alt="10、特征性质与控制差分系统" height="450" width="450">
+</div>
+
+<pre><code>映射与特征性质
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/11、映射的矩阵表示.png" alt="11、映射的矩阵表示" height="450" width="450">
+  <img src="../image/linear_algebra/11、映射的矩阵表示2.png" alt="11、映射的矩阵表示2" height="450" width="450">
+</div>
+
+<pre><code>!系统解耦、特征多项式与微分方程!
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/11、变量代换与系统解耦.png" alt="11、变量代换与系统解耦" height="450" width="450">
+  <img src="../image/linear_algebra/11、特征多项式与微分方程解.png" alt="11、特征多项式与微分方程解" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/11、特征方程与变量代换_解耦系统.png" alt="11、特征方程与变量代换_解耦系统" height="450" width="450">
+  <img src="../image/linear_algebra/11、幂算法与主特征值_差分方程_微分方程系统.png" alt="11、幂算法与主特征值_差分方程_微分方程系统" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/11、逆幂法与主特征值_收敛速度.png" alt="11、逆幂法与主特征值_收敛速度" height="450" width="450">
+</div>
+
+<h5 id="6、正交性与最小二乘"><a href="#6、正交性与最小二乘" class="headerlink" title="6、正交性与最小二乘"></a>6、正交性与最小二乘</h5><pre><code>关键点:投影、正交化、最小二乘、正交基.
+
+投影
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/12、行列空间与零空间的正交补_行列转置.png" alt="12、行列空间与零空间的正交补_行列转置" height="450" width="450">
+  <img src="../image/linear_algebra/12、正交投影与最小二乘.png" alt="12、正交投影与最小二乘" height="450" width="450">
+</div>
+
+<pre><code>施密特正交基
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/12、正交投影与多维.png" alt="12、正交投影与多维" height="450" width="450">
+  <img src="../image/linear_algebra/12、正交投影与施密特正交基.png" alt="12、正交投影与施密特正交基" height="450" width="450">
+</div>
+
+<pre><code>QR分解
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/12、QR分解与施密特正交基.png" alt="12、QR分解与施密特正交基" height="450" width="450">
+  <img src="../image/linear_algebra/12、QR分解与施密特正交基2.png" alt="12、QR分解与施密特正交基2" height="450" width="450">
+</div>
+
+<pre><code>估计值与最小二乘
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/13、估计值与最小二乘_误差.png" alt="12、QR分解与施密特正交基" height="450" width="450">
+  <img src="../image/linear_algebra/13、估计值与最小二乘_误差_正交投影.png" alt="12、QR分解与施密特正交基2" height="450" width="450">
+</div>
+
+<pre><code>拟合与最小二乘
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/13、最小二乘_拟线.png" alt="13、最小二乘_拟线" height="450" width="450">
+  <img src="../image/linear_algebra/13、最小二乘_拟面.png" alt="13、最小二乘_拟面" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/13、内积与施密特.png" alt="13、内积与施密特" height="450" width="450">
+  <img src="../image/linear_algebra/13、内积的最佳逼近.png" alt="13、内积的最佳逼近" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/13、最小二乘_拟线.png" alt="13、最小二乘_拟线" height="450" width="450">
+  <img src="../image/linear_algebra/13、最小二乘_拟面.png" alt="13、最小二乘_拟面" height="450" width="450">
+</div>
+
+<pre><code>加权最小二乘逼近
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/13、加权最小二乘逼近.png" alt="13、加权最小二乘逼近" height="450" width="450">
+  <img src="../image/linear_algebra/13、加权最小二乘逼近2.png" alt="13、加权最小二乘逼近2" height="450" width="450">
+</div>
+
+<pre><code>傅里叶与多项式
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/13、傅里叶级数与三角多项式_子空间函数逼近.png" alt="13、加权最小二乘逼近" height="450" width="450">
+</div>
+
+<h5 id="7、对称矩阵和二次型"><a href="#7、对称矩阵和二次型" class="headerlink" title="7、对称矩阵和二次型"></a>7、对称矩阵和二次型</h5><pre><code>关键点:对称矩阵、对角化、二次型、奇异值分解(SVD)、四个子空间.
+
+二次型与极值、特征量
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/14、实对称阵与正交对角化.png" alt="14、实对称阵与正交对角化" height="450" width="450">
+  <img src="../image/linear_algebra/14、实对称矩阵和二次型_特征向量与特征值.png" alt="14、实对称矩阵和二次型_特征向量与特征值" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/14、二次型与特征值_系统正负定.png" alt="14、二次型与特征值_系统正负定" height="450" width="450">
+  <img src="../image/linear_algebra/14、二次型极值与特征值.png" alt="14、二次型极值与特征值" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/14、二次型极值与对称矩阵_特征值.png" alt="14、二次型极值与对称矩阵_特征值" height="450" width="450">
+</div>
+
+<pre><code>奇异值分解(SVD)
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/15、对称矩阵的奇异值与特征值.png" alt="15、对称矩阵的奇异值与特征值" height="450" width="450">
+  <img src="../image/linear_algebra/15、奇异值与正交基_各基权值.png" alt="15、奇异值与正交基_各基权值" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/15、奇异值分解(SVD)_正交基.png" alt="15、奇异值分解(SVD)_正交基" height="450" width="450">
+  <img src="../image/linear_algebra/15、奇异值分解(SVD)_正交基Av.png" alt="15、奇异值分解(SVD)_正交基Av" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/15、奇异分解与主要成分分析.png" alt="15、奇异分解与主要成分分析" height="450" width="450">
+  <img src="../image/linear_algebra/15、奇异分解与子空间.png" alt="15、奇异分解与子空间" height="450" width="450">
+</div>
+
+<pre><code>SVD与四个子空间
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/16、四个基本子空间与可逆矩阵.png" alt="16、四个基本子空间与可逆矩阵" height="450" width="450">
+  <img src="../image/linear_algebra/16、均值与协方差矩阵.png" alt="16、均值与协方差矩阵" height="450" width="450">
+</div>
+
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/16、总方差与协方差.png" alt="16、总方差与协方差" height="450" width="450">
+  <img src="../image/linear_algebra/16、协方差矩阵_观测矩阵(不同参考系)_主要成分(正态分布).png" alt="16、协方差矩阵_观测矩阵(不同参考系)_主要成分(正态分布)" height="450" width="450">
+</div>
+
+<pre><code>仿射变换
+</code></pre>
+<div style="display: flex; gap: 20px; justify-content: center;">
+  <img src="../image/linear_algebra/17、仿射变换.png" alt="17、仿射变换" height="450" width="450">
+</div>
+      </div>
+      
+      
+      
+    </div>
+    
+
+    
+    
+    
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A7%AF%E5%88%86-%E4%B8%80"><span class="nav-number">1.</span> <span class="nav-text">积分(一)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B-%E4%BA%8C"><span class="nav-number">2.</span> <span class="nav-text">微分方程(二)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1%E3%80%81%E9%BD%90%E6%AC%A1%E3%80%81n%E9%98%B6%E6%96%B9%E7%A8%8B"><span class="nav-number">2.1.</span> <span class="nav-text">1、齐次、n阶方程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2%E3%80%81%E9%AB%98%E9%98%B6%E7%BA%BF%E6%80%A7-%E5%B8%B8%E7%B3%BB%E6%95%B0%E9%BD%90%E6%AC%A1-%E9%9D%9E%E9%BD%90%E6%AC%A1%E6%96%B9%E7%A8%8B"><span class="nav-number">2.2.</span> <span class="nav-text">2、高阶线性-&gt;常系数齐次&#x2F;非齐次方程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3%E3%80%81%E6%96%B9%E7%A8%8B%E6%B1%82%E8%A7%A3-%E9%9D%9E%E9%BD%90%E6%AC%A1%E7%89%B9%E8%A7%A3-%E9%BD%90%E6%AC%A1%E9%80%9A%E8%A7%A3-%E3%80%81%E8%A7%A3%E7%9A%84%E7%89%B9%E5%BE%81%E6%96%B9%E7%A8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">3、方程求解(非齐次特解+齐次通解)、解的特征方程</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E5%BE%AE%E5%88%86-%E4%B8%89"><span class="nav-number">3.</span> <span class="nav-text">多元函数微分(三)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1%E3%80%81%E6%9D%A1%E4%BB%B6%E6%9E%81%E5%80%BC"><span class="nav-number">3.1.</span> <span class="nav-text">1、条件极值</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2%E3%80%81%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E4%B8%8E%E5%AF%BC%E6%95%B0"><span class="nav-number">3.2.</span> <span class="nav-text">2、微分方程与导数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3%E3%80%81%E7%BA%A7%E6%95%B0"><span class="nav-number">3.3.</span> <span class="nav-text">3、级数</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A6%82%E7%8E%87%E8%AE%BA%E4%B8%8E%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1"><span class="nav-number">4.</span> <span class="nav-text">概率论与数理统计</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1%E3%80%81%E6%95%B0%E5%AD%A6%E6%9C%9F%E6%9C%9B%E4%B8%8E%E6%96%B9%E5%B7%AE"><span class="nav-number">4.1.</span> <span class="nav-text">1、数学期望与方差</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2%E3%80%81%E5%8D%8F%E6%96%B9%E5%B7%AE%E4%B8%8E%E7%9B%B8%E5%85%B3%E7%9F%A9%E9%98%B5"><span class="nav-number">4.2.</span> <span class="nav-text">2、协方差与相关矩阵</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3%E3%80%81%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92"><span class="nav-number">4.3.</span> <span class="nav-text">3、线性回归</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%8D%E6%95%B0%E4%B8%8E%E9%A2%91%E7%8E%87%E5%9F%9F%E4%BF%A1%E5%8F%B7"><span class="nav-number">5.</span> <span class="nav-text">复数与频率域信号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8"><span class="nav-number">6.</span> <span class="nav-text">线性代数及其应用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1%E3%80%81%E7%9F%A9%E9%98%B5%E5%8F%98%E6%8D%A2%E4%B8%8E%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B%E7%BB%84"><span class="nav-number">6.1.</span> <span class="nav-text">1、矩阵变换与线性方程组</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2%E3%80%81%E7%9F%A9%E9%98%B5%E4%BB%A3%E6%95%B0"><span class="nav-number">6.2.</span> <span class="nav-text">2、矩阵代数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3%E3%80%81%E8%A1%8C%E5%88%97%E5%BC%8F%E4%B8%8E%E9%80%86%E7%9F%A9%E9%98%B5"><span class="nav-number">6.3.</span> <span class="nav-text">3、行列式与逆矩阵</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4%E3%80%81%E5%90%91%E9%87%8F%E7%A9%BA%E9%97%B4%E4%B8%8E%E7%9F%A9%E9%98%B5%E7%A9%BA%E9%97%B4"><span class="nav-number">6.4.</span> <span class="nav-text">4、向量空间与矩阵空间</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5%E3%80%81%E7%89%B9%E5%BE%81%E5%80%BC%E4%B8%8E%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F"><span class="nav-number">6.5.</span> <span class="nav-text">5、特征值与特征向量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6%E3%80%81%E6%AD%A3%E4%BA%A4%E6%80%A7%E4%B8%8E%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98"><span class="nav-number">6.6.</span> <span class="nav-text">6、正交性与最小二乘</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7%E3%80%81%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E5%92%8C%E4%BA%8C%E6%AC%A1%E5%9E%8B"><span class="nav-number">6.7.</span> <span class="nav-text">7、对称矩阵和二次型</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="By Spotted Owl"
+      src="/images/fyp.jpg">
+  <p class="site-author-name" itemprop="name">By Spotted Owl</p>
+  <div class="site-description" itemprop="description">少年自有凌云志，不负黄河万古流.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2025-10 – 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">By Spotted Owl</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
